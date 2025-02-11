@@ -1,0 +1,181 @@
+version: 2
+updates:
+  # Frontend web application dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    allow:
+      - dependency-type: "all"
+    assignees:
+      - "team-frontend"
+    reviewers:
+      - "lead-frontend"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      mui:
+        patterns:
+          - "@mui/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+    security-updates:
+      auto-merge: true
+      priority: "high"
+
+  # Backend services dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    allow:
+      - dependency-type: "all"
+    assignees:
+      - "team-backend"
+    reviewers:
+      - "lead-backend"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      testing:
+        patterns:
+          - "jest*"
+          - "@testing-library/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+    security-updates:
+      auto-merge: true
+      priority: "high"
+
+  # Android application dependencies
+  - package-ecosystem: "gradle"
+    directory: "/src/android"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    allow:
+      - dependency-type: "all"
+    assignees:
+      - "team-android"
+    reviewers:
+      - "lead-android"
+    labels:
+      - "dependencies"
+      - "android"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      androidx:
+        patterns:
+          - "androidx.*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+    security-updates:
+      auto-merge: true
+      priority: "high"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    allow:
+      - dependency-type: "all"
+    assignees:
+      - "team-devops"
+    reviewers:
+      - "lead-devops"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    security-updates:
+      auto-merge: true
+      priority: "critical"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    allow:
+      - dependency-type: "all"
+    assignees:
+      - "team-devops"
+    reviewers:
+      - "lead-devops"
+    labels:
+      - "dependencies"
+      - "ci-cd"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    security-updates:
+      auto-merge: true
+      priority: "high"

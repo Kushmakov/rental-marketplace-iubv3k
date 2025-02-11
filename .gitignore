@@ -1,0 +1,167 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+package-lock.json
+yarn.lock
+Pods/
+Carthage/
+.gradle/
+vendor/
+*.jar
+*.aar
+
+# Environment and Configuration
+.env
+.env.*
+*.properties
+config.local.*
+GoogleService-Info.plist
+google-services.json
+aws-exports.js
+amplify/
+firebase.json
+
+# Build and Compilation
+dist/
+build/
+out/
+.next/
+coverage/
+DerivedData/
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+*.dSYM
+.expo/
+.nuxt/
+.output/
+
+# IDE and Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-workspace
+*.sublime-project
+xcuserdata/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+.project
+.settings/
+
+# Logs and Debugging
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+crashlytics-build.properties
+/captures/
+
+# Security and Credentials
+*.pem
+*.key
+*.keystore
+*.jks
+*.p12
+*.cer
+*.mobileprovision
+keystore.properties
+secrets.yaml
+credentials.json
+*.pfx
+*.csr
+id_rsa*
+*.pub
+
+# Infrastructure
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraformrc
+terraform.tfvars
+kubeconfig
+.kube/
+helm/charts/*/charts/
+values.*.yaml
+
+# Testing and Coverage
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+cypress/videos/
+cypress/screenshots/
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Mobile Development
+# iOS
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Android
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Web Development
+.cache/
+.parcel-cache/
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

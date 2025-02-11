@@ -1,0 +1,199 @@
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/backend/**']
+  pull_request:
+    branches: [main]
+    paths: ['src/backend/**']
+
+env:
+  NODE_VERSION: '18'
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install dependencies
+        run: npm ci
+        working-directory: src/backend
+      
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: src/backend
+      
+      - name: Run unit tests
+        run: npm run test
+        working-directory: src/backend
+        env:
+          CI: true
+      
+      - name: Run integration tests
+        run: npm run test:coverage
+        working-directory: src/backend
+        env:
+          CI: true
+      
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-reports
+          path: src/backend/coverage
+          retention-days: 14
+
+  security_scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@v1
+        with:
+          args: --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
+      
+      - name: Run npm audit
+        run: npm audit
+        working-directory: src/backend
+      
+      - name: Run container security scan
+        uses: aquasecurity/trivy-action@v1
+        with:
+          scan-type: 'fs'
+          scan-ref: 'src/backend'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+  build_containers:
+    name: Build Service Containers
+    runs-on: ubuntu-latest
+    needs: security_scan
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push API Gateway
+        uses: docker/build-push-action@v5
+        with:
+          context: src/backend
+          file: src/backend/Dockerfile
+          push: true
+          tags: ${{ env.DOCKER_REGISTRY }}/api-gateway:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.DOCKER_REGISTRY }}/api-gateway:latest
+          cache-to: type=inline
+          target: production
+      
+      - name: Build and push Auth Service
+        uses: docker/build-push-action@v5
+        with:
+          context: src/backend
+          file: src/backend/Dockerfile
+          push: true
+          tags: ${{ env.DOCKER_REGISTRY }}/auth-service:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.DOCKER_REGISTRY }}/auth-service:latest
+          cache-to: type=inline
+          target: production
+
+  deploy:
+    name: Deploy Services
+    runs-on: ubuntu-latest
+    needs: build_containers
+    timeout-minutes: 30
+    environment:
+      name: ${{ github.event_name == 'push' && 'production' || 'staging' }}
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name rental-platform-cluster --region ${{ env.AWS_REGION }}
+      
+      - name: Deploy to staging
+        if: github.event_name == 'pull_request'
+        run: |
+          kubectl apply -f k8s/staging/
+          kubectl set image deployment/api-gateway api-gateway=${{ env.DOCKER_REGISTRY }}/api-gateway:${{ github.sha }}
+          kubectl set image deployment/auth-service auth-service=${{ env.DOCKER_REGISTRY }}/auth-service:${{ github.sha }}
+          kubectl rollout status deployment/api-gateway
+          kubectl rollout status deployment/auth-service
+      
+      - name: Deploy to production
+        if: github.event_name == 'push'
+        run: |
+          kubectl apply -f k8s/production/
+          kubectl set image deployment/api-gateway api-gateway=${{ env.DOCKER_REGISTRY }}/api-gateway:${{ github.sha }}
+          kubectl set image deployment/auth-service auth-service=${{ env.DOCKER_REGISTRY }}/auth-service:${{ github.sha }}
+          kubectl rollout status deployment/api-gateway
+          kubectl rollout status deployment/auth-service
+      
+      - name: Verify deployment
+        run: |
+          kubectl get pods -o wide
+          kubectl get services
+          kubectl get deployments
+
+      - name: Monitor deployment health
+        run: |
+          for i in {1..30}; do
+            if kubectl get pods | grep -q "Running"; then
+              echo "Deployment healthy"
+              exit 0
+            fi
+            echo "Waiting for deployment to stabilize..."
+            sleep 10
+          done
+          echo "Deployment health check failed"
+          exit 1

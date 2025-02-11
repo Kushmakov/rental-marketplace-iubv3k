@@ -1,0 +1,200 @@
+name: iOS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/ios/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/ios/**'
+      - '.github/workflows/ios.yml'
+
+env:
+  DEVELOPER_APP_ID: com.projectx.rental
+  XCODE_VERSION: '15.0'
+  RUBY_VERSION: '3.2'
+  FASTLANE_SKIP_UPDATE_CHECK: true
+  FASTLANE_XCODE_LIST_TIMEOUT: 120
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: macos-13
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+        fetch-depth: 0
+
+    - name: Setup Ruby Environment
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ env.RUBY_VERSION }}
+        bundler-cache: true
+
+    - name: Setup Xcode Version
+      run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
+
+    - name: Cache Dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/Library/Caches/CocoaPods
+          Pods
+          vendor/bundle
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
+    - name: Install Dependencies
+      run: |
+        gem install bundler
+        bundle install
+        bundle exec pod install --repo-update
+
+    - name: Run SwiftLint
+      run: |
+        brew install swiftlint
+        swiftlint --strict --reporter github-actions-logging
+
+    - name: Run Unit Tests
+      run: |
+        xcodebuild test \
+          -workspace ProjectX.xcworkspace \
+          -scheme ProjectX \
+          -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' \
+          -enableCodeCoverage YES \
+          | xcpretty
+
+    - name: Run UI Tests
+      run: |
+        xcodebuild test \
+          -workspace ProjectX.xcworkspace \
+          -scheme ProjectXUITests \
+          -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' \
+          | xcpretty
+
+    - name: Security Scan Dependencies
+      uses: anchore/scan-action@v3
+      with:
+        path: "src/ios"
+        fail-build: true
+
+    - name: Build Debug IPA
+      run: |
+        xcodebuild archive \
+          -workspace ProjectX.xcworkspace \
+          -scheme ProjectX \
+          -configuration Debug \
+          -archivePath build/ProjectX.xcarchive \
+          | xcpretty
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          build/reports
+          build/*.xcresult
+
+    - name: Upload Code Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: ios
+        fail_ci_if_error: true
+
+  deploy:
+    name: Deploy to TestFlight
+    needs: build
+    runs-on: macos-13
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Ruby Environment
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ env.RUBY_VERSION }}
+        bundler-cache: true
+
+    - name: Setup Keychain
+      env:
+        KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+      run: |
+        security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+        security set-keychain-settings -t 3600 -l build.keychain
+
+    - name: Install Certificates
+      env:
+        P12_BASE64: ${{ secrets.APPLE_SIGNING_CERTIFICATE_P12_DATA }}
+        P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+      run: |
+        echo -n "$P12_BASE64" | base64 --decode > certificate.p12
+        security import certificate.p12 -k build.keychain -P "$P12_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
+    - name: Install Provisioning Profile
+      env:
+        PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_DATA }}
+      run: |
+        echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+    - name: Build and Sign Release
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+      run: |
+        xcodebuild archive \
+          -workspace ProjectX.xcworkspace \
+          -scheme ProjectX \
+          -configuration Release \
+          -archivePath build/ProjectX.xcarchive \
+          | xcpretty
+        
+        xcodebuild -exportArchive \
+          -archivePath build/ProjectX.xcarchive \
+          -exportOptionsPlist exportOptions.plist \
+          -exportPath build/ipa \
+          | xcpretty
+
+    - name: Upload to TestFlight
+      uses: maierj/fastlane-action@v3
+      with:
+        lane: beta
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ios-${{ github.sha }}
+        release_name: iOS Release ${{ github.sha }}
+        body: |
+          iOS Release Build
+          Commit: ${{ github.sha }}
+          Branch: ${{ github.ref }}
+        draft: false
+        prerelease: false

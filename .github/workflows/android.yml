@@ -1,0 +1,188 @@
+name: Android CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Deployment Environment'
+        options:
+          - staging
+          - production
+        required: true
+
+# Prevent concurrent runs of the same workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '17'
+  DISTRIBUTION: 'temurin'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=4'
+  CACHE_KEY_PREFIX: 'gradle-'
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.DISTRIBUTION }}
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.4.2
+        with:
+          gradle-version: wrapper
+          cache-read-only: false
+          cache-write-only: ${{ github.ref == 'refs/heads/main' }}
+          arguments: --build-cache --parallel
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: java, kotlin
+          queries: security-extended
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+          key: ${{ env.CACHE_KEY_PREFIX }}${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ env.CACHE_KEY_PREFIX }}
+
+      - name: Run Unit Tests
+        run: ./gradlew test --parallel
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
+
+      - name: Run Android Lint
+        run: ./gradlew lint
+
+      - name: Run Security Scan
+        run: ./gradlew dependencyCheckAnalyze
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Build Release APK
+        if: github.event_name != 'pull_request'
+        run: ./gradlew assembleRelease
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Generate Test Coverage Report
+        run: ./gradlew koverXmlReport
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-artifacts
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
+          retention-days: 14
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            app/build/reports/tests/
+            app/build/reports/kover/
+          retention-days: 14
+
+      - name: Upload Security Scan Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan
+          path: build/reports/dependency-check-report.html
+          retention-days: 14
+
+      - name: Publish Build Scan
+        if: always()
+        run: ./gradlew buildScanPublish
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
+
+  deploy:
+    name: Deploy to Play Store
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    timeout-minutes: 15
+
+    steps:
+      - name: Download APK Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: apk-artifacts
+
+      - name: Setup Play Store Credentials
+        run: |
+          echo "${{ secrets.PLAY_STORE_JSON_KEY }}" > play-store-key.json
+        env:
+          PLAY_STORE_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}
+
+      - name: Deploy to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: play-store-key.json
+          packageName: com.projectx.rental
+          releaseFiles: app/build/outputs/apk/release/*.apk
+          track: ${{ github.event.inputs.environment == 'production' && 'production' || 'internal' }}
+          status: completed
+          inAppUpdatePriority: 3
+
+      - name: Create GitHub Release
+        if: github.event.inputs.environment == 'production'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup Sensitive Data
+        if: always()
+        run: |
+          rm -f play-store-key.json
+          rm -f app/build/outputs/apk/release/*.apk
+
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

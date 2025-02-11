@@ -1,0 +1,118 @@
+PROJECT X RENTAL MARKETPLACE PLATFORM
+PROPRIETARY SOFTWARE LICENSE AGREEMENT
+Version 1.0.0
+
+Copyright © 2023. All Rights Reserved.
+
+1. DEFINITIONS
+
+"Software" refers to Project X rental marketplace platform including all source code, compiled binaries, components, documentation, and associated materials.
+
+"Licensor" refers to the owner and provider of the Software.
+
+"Licensee" refers to the authorized organization or entity granted rights under this Agreement.
+
+2. GRANT OF LICENSE
+
+Subject to the terms and conditions of this Agreement, Licensor grants Licensee a non-transferable, non-exclusive license to:
+
+a) Deploy the Software in authorized production environments
+b) Maintain and update the Software through authorized personnel
+c) Create necessary backup copies for operational purposes
+d) Integrate with approved third-party services
+e) Conduct security audits and compliance verification
+f) Perform monitoring and optimization activities
+g) Implement bug fixes and security patches
+h) Provide user training and support
+
+3. SCOPE OF LICENSE
+
+This license covers:
+- Source code and compiled binaries
+- Web application frontend and backend
+- Mobile applications (iOS/Android)
+- Backend microservices and APIs
+- Infrastructure code and configurations
+- Database schemas and data models
+- User interface designs and assets
+- Technical documentation
+- Development tools and utilities
+- Test suites and frameworks
+
+4. RESTRICTIONS
+
+Licensee shall not:
+a) Distribute or share any components without authorization
+b) Create unauthorized derivative works
+c) Use the Software for unauthorized commercial purposes
+d) Attempt reverse engineering or decompilation
+e) Remove or modify copyright notices or proprietary markings
+f) Transfer license rights to unauthorized parties
+g) Grant access to unauthorized third parties
+h) Deploy in unauthorized environments
+i) Violate confidentiality requirements
+j) Infringe upon intellectual property rights
+
+5. COMPLIANCE REQUIREMENTS
+
+Licensee must maintain:
+a) SOC 2 Type II compliance
+b) Regular security audit schedule
+c) Access control implementation
+d) Data protection measures
+e) Change management procedures
+
+6. AUDIT AND DOCUMENTATION
+
+Licensee shall:
+a) Maintain documentation for 7 years
+b) Maintain audit trails for all access and modifications
+c) Conduct quarterly compliance reviews
+d) Provide audit reports upon request
+
+7. VERSION CONTROL
+
+a) Software follows Major.Minor.Patch versioning
+b) All changes must be tracked in Git repository
+c) Update notifications are mandatory
+d) Version history must be maintained
+
+8. CONFIDENTIALITY
+
+All Software components, documentation, and associated materials are confidential and proprietary to Licensor.
+
+9. TERMINATION
+
+License may be terminated for:
+a) Violation of license terms
+b) Breach of compliance requirements
+c) Unauthorized use or distribution
+d) Failure to maintain security standards
+
+10. GOVERNING LAW
+
+This Agreement is governed by the laws of the State of Delaware, United States.
+
+11. DISPUTE RESOLUTION
+
+All disputes shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.
+
+12. WARRANTY DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+13. LIMITATION OF LIABILITY
+
+LICENSOR SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES.
+
+14. SURVIVAL
+
+Sections regarding confidentiality, compliance, audit requirements, and liability limitations survive termination.
+
+15. ENTIRE AGREEMENT
+
+This Agreement constitutes the entire understanding between parties regarding the Software's use and supersedes all prior agreements.
+
+By using the Software, Licensee agrees to be bound by the terms of this Agreement.
+
+[End of License]

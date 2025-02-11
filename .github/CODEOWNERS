@@ -1,0 +1,62 @@
+# These owners have overall architectural oversight
+* @projectx/core-team
+
+# Frontend Web Application
+/src/web/ @projectx/frontend-team @projectx/security-team
+/src/web/components/auth/ @projectx/security-team @projectx/frontend-team
+/src/web/components/payment/ @projectx/security-team @projectx/frontend-team @projectx/compliance-team
+
+# Mobile Applications
+/src/android/ @projectx/android-team @projectx/mobile-security
+/src/ios/ @projectx/ios-team @projectx/mobile-security
+
+# Backend Services
+/src/backend/ @projectx/backend-team @projectx/security-team
+/src/backend/packages/auth-service/ @projectx/security-team @projectx/backend-team @projectx/compliance-team
+/src/backend/packages/payment-service/ @projectx/security-team @projectx/backend-team @projectx/compliance-team
+/src/backend/packages/user-service/ @projectx/security-team @projectx/backend-team @projectx/compliance-team
+
+# Infrastructure and DevOps
+/infrastructure/ @projectx/devops-team @projectx/security-team
+/.github/workflows/ @projectx/devops-team @projectx/security-team
+/docker-compose.yml @projectx/devops-team @projectx/security-team
+/Dockerfile @projectx/devops-team @projectx/security-team
+
+# API Gateway and Service Mesh
+/src/backend/packages/api-gateway/ @projectx/backend-team @projectx/security-team
+
+# Documentation
+/docs/ @projectx/documentation-team @projectx/core-team
+/README.md @projectx/documentation-team @projectx/core-team
+
+# Security Configurations
+/security/ @projectx/security-team @projectx/compliance-team
+**/*.env.example @projectx/security-team @projectx/devops-team
+**/*config*.{js,ts,json} @projectx/security-team @projectx/devops-team
+
+# Test Suites
+/src/*/tests/ @projectx/qa-team @projectx/security-team
+/src/*/cypress/ @projectx/qa-team @projectx/frontend-team
+/src/*/jest/ @projectx/qa-team
+
+# Package Dependencies
+package.json @projectx/core-team @projectx/security-team
+yarn.lock @projectx/core-team @projectx/security-team
+**/package-lock.json @projectx/core-team @projectx/security-team
+**/Podfile @projectx/ios-team @projectx/security-team
+**/Podfile.lock @projectx/ios-team @projectx/security-team
+**/build.gradle* @projectx/android-team @projectx/security-team
+
+# Database Migrations and Schemas
+/src/backend/*/migrations/ @projectx/backend-team @projectx/data-team @projectx/security-team
+/src/backend/*/schemas/ @projectx/backend-team @projectx/data-team @projectx/security-team
+
+# Monitoring and Observability
+/src/backend/packages/monitoring/ @projectx/devops-team @projectx/security-team
+/src/backend/packages/logging/ @projectx/devops-team @projectx/security-team
+
+# CI/CD Pipeline Configurations
+/.github/workflows/android.yml @projectx/android-team @projectx/devops-team @projectx/security-team
+/.github/workflows/ios.yml @projectx/ios-team @projectx/devops-team @projectx/security-team
+/.github/workflows/web.yml @projectx/frontend-team @projectx/devops-team @projectx/security-team
+/.github/workflows/backend.yml @projectx/backend-team @projectx/devops-team @projectx/security-team

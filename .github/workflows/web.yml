@@ -1,0 +1,248 @@
+name: Web Application CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/web/**']
+  pull_request:
+    branches: [main]
+    paths: ['src/web/**']
+
+env:
+  NODE_VERSION: '18'
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+  NEXT_PUBLIC_STRIPE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_KEY }}
+  NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  BUILD_ID: ${{ github.sha }}
+
+jobs:
+  install:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/web/package-lock.json'
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+            src/web/.next/cache
+          key: ${{ runner.os }}-web-${{ hashFiles('src/web/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-web-
+
+      - name: Install Dependencies
+        working-directory: src/web
+        run: npm ci
+
+      - name: Verify Installation
+        working-directory: src/web
+        run: npm list --prod
+
+  lint_and_type_check:
+    name: Lint and Type Check
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/web/package-lock.json'
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+          key: ${{ runner.os }}-web-${{ hashFiles('src/web/package-lock.json') }}
+
+      - name: Run ESLint
+        working-directory: src/web
+        run: npm run lint
+
+      - name: Run Type Check
+        working-directory: src/web
+        run: npm run type-check
+
+  unit_tests:
+    name: Unit Tests
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/web/package-lock.json'
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+          key: ${{ runner.os }}-web-${{ hashFiles('src/web/package-lock.json') }}
+
+      - name: Run Tests with Coverage
+        working-directory: src/web
+        run: npm run test:coverage
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ env.CODECOV_TOKEN }}
+          directory: src/web/coverage
+          flags: unittests
+          fail_ci_if_error: true
+
+      - name: Store Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: src/web/coverage
+          retention-days: 14
+
+  build:
+    name: Production Build
+    needs: [lint_and_type_check, unit_tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/web/package-lock.json'
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+            src/web/.next/cache
+          key: ${{ runner.os }}-web-${{ hashFiles('src/web/package-lock.json') }}
+
+      - name: Production Build
+        working-directory: src/web
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Store Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: src/web/.next
+          retention-days: 14
+
+  e2e_tests:
+    name: E2E Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/web/package-lock.json'
+
+      - name: Restore Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+          key: ${{ runner.os }}-web-${{ hashFiles('src/web/package-lock.json') }}
+
+      - name: Cypress Run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: src/web
+          build: npm run build
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          record: true
+          parallel: true
+          browser: chrome
+          headless: true
+          config-file: cypress.config.ts
+
+      - name: Store Test Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-artifacts
+          path: |
+            src/web/cypress/videos
+            src/web/cypress/screenshots
+          retention-days: 14
+
+  deploy:
+    name: Deploy
+    needs: [build, e2e_tests]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event_name == 'push' && 'production' || 'staging' }}
+      url: ${{ github.event_name == 'push' && 'https://projectx.com' || 'https://staging.projectx.com' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-duration-seconds: 1200
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: src/web/.next
+
+      - name: Deploy to AWS
+        working-directory: src/web
+        run: |
+          aws s3 sync .next s3://${{ secrets.AWS_S3_BUCKET }}/${{ env.BUILD_ID }} \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable"
+          
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} \
+            --paths "/*"
+
+      - name: Verify Deployment
+        run: |
+          curl -sSf ${{ env.ENVIRONMENT_URL }}/_health || exit 1
+
+      - name: Run Smoke Tests
+        working-directory: src/web
+        run: npm run cypress:smoke
+        env:
+          CYPRESS_BASE_URL: ${{ env.ENVIRONMENT_URL }}
+
+      - name: Update Deployment Status
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            gh deployment create --ref ${{ github.sha }} --environment ${{ env.ENVIRONMENT_NAME }} --production
+          else
+            gh deployment create --ref ${{ github.sha }} --environment ${{ env.ENVIRONMENT_NAME }} --production --auto-inactive
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

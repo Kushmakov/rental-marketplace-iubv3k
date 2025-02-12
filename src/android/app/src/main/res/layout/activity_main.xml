@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Main Activity Layout
+    Package: com.google.android.material:material:1.9.0
+    androidx.constraintlayout:constraintlayout:2.1.4
+    
+    Implements Material Design 3.0 splash screen with:
+    - Responsive layout using ConstraintLayout
+    - Accessibility support (TalkBack, content descriptions)
+    - Material Design components and theming
+    - Smooth animations for transitions
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:fitsSystemWindows="true"
+    android:importantForAccessibility="yes"
+    tools:context=".MainActivity">
+
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="@dimen/spacing_unit_8x"
+        android:layout_height="@dimen/spacing_unit_8x"
+        android:src="@drawable/ic_launcher_foreground"
+        android:contentDescription="@string/app_logo_description"
+        android:importantForAccessibility="yes"
+        android:alpha="0"
+        app:layout_constraintBottom_toTopOf="@id/loadingIndicator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- Loading Indicator -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_unit_3x"
+        android:indeterminate="true"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@string/loading_indicator_description"
+        android:alpha="0"
+        app:indicatorColor="@color/primary"
+        app:trackColor="@color/surface_light"
+        app:indicatorSize="@dimen/spacing_unit_4x"
+        app:trackThickness="@dimen/spacing_unit_0_5x"
+        style="@style/Widget.Material3.CircularProgressIndicator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logoImageView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

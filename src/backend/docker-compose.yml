@@ -1,0 +1,189 @@
+version: '3.8'
+
+# Global environment variables
+x-environment: &common-env
+  NODE_ENV: development
+  TZ: UTC
+  API_VERSION: v1
+  LOG_LEVEL: info
+  CORS_ORIGIN: http://localhost:3000
+
+# Common service configuration
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  # API Gateway Service
+  api-gateway:
+    <<: *service-defaults
+    build:
+      context: ./packages/api-gateway
+      dockerfile: ../../Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *common-env
+      SERVER_PORT: 3000
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 1000
+      REQUEST_TIMEOUT_MS: 30000
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./packages/api-gateway:/app
+      - /app/node_modules
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Authentication Service
+  auth-service:
+    <<: *service-defaults
+    build:
+      context: ./packages/auth-service
+      dockerfile: ../../Dockerfile
+      target: development
+    environment:
+      <<: *common-env
+      SERVER_PORT: 3001
+      JWT_ALGORITHM: RS256
+      JWT_EXPIRY: 1h
+      REFRESH_TOKEN_EXPIRY: 7d
+      REDIS_URL: redis://redis:6379
+      DB_HOST: postgres
+    volumes:
+      - ./packages/auth-service:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: rental_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backup:/backups
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # Redis Cache
+  redis:
+    image: redis:7.0-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Elasticsearch
+  elasticsearch:
+    image: elasticsearch:8.9.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'status.*green'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/postgres
+      o: bind
+  postgres_backup:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/backups/postgres
+      o: bind
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/redis
+      o: bind
+  elasticsearch_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data/elasticsearch
+      o: bind
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

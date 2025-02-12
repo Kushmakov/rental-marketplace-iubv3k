@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Adaptive Launcher Icon Configuration
+    Material Design 3.0 Implementation
+    Minimum API Level: 26+
+    
+    This file defines the layered structure of the app's launcher icon,
+    implementing Material Design 3.0 color system requirements and ensuring
+    proper icon scaling and masking behavior across different Android devices.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
+        Background layer using Material Design color system
+        Implemented in ic_launcher_background.xml
+    -->
+    <android:background>@drawable/ic_launcher_background</android:background>
+    
+    <!-- 
+        Foreground layer containing the main icon imagery
+        Implemented in ic_launcher_foreground.xml with proper safe zone scaling
+    -->
+    <android:foreground>@drawable/ic_launcher_foreground</android:foreground>
+</adaptive-icon>

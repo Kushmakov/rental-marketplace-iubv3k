@@ -1,0 +1,185 @@
+{
+  "payments": [
+    {
+      "id": "pay_test_001",
+      "applicationId": "app_test_001", 
+      "propertyId": "prop_test_001",
+      "userId": "user_test_001",
+      "type": "application_fee",
+      "status": "captured",
+      "amount": 5000,
+      "currency": "USD",
+      "frequency": "one_time",
+      "dueDate": "2024-01-15T00:00:00.000Z",
+      "paidDate": "2024-01-15T10:30:00.000Z",
+      "stripePaymentIntentId": "pi_test_123",
+      "paymentMethodId": "pm_test_123",
+      "retryCount": 0,
+      "metadata": {
+        "propertyName": "Test Property 1",
+        "applicantName": "John Doe",
+        "processingFee": 250,
+        "paymentProcessor": "stripe",
+        "paymentMethod": "card"
+      },
+      "createdAt": "2024-01-15T10:25:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": "pay_test_002",
+      "applicationId": "app_test_002",
+      "propertyId": "prop_test_001",
+      "userId": "user_test_002",
+      "type": "security_deposit",
+      "status": "pending",
+      "amount": 200000,
+      "currency": "USD",
+      "frequency": "one_time",
+      "dueDate": "2024-02-01T00:00:00.000Z",
+      "paidDate": null,
+      "stripePaymentIntentId": "pi_test_456",
+      "paymentMethodId": "pm_test_456",
+      "retryCount": 0,
+      "metadata": {
+        "propertyName": "Test Property 1",
+        "applicantName": "Jane Smith",
+        "depositType": "refundable",
+        "paymentProcessor": "stripe",
+        "paymentMethod": "bank_transfer"
+      },
+      "createdAt": "2024-01-20T15:00:00.000Z",
+      "updatedAt": "2024-01-20T15:00:00.000Z"
+    },
+    {
+      "id": "pay_test_003",
+      "applicationId": "app_test_002",
+      "propertyId": "prop_test_001",
+      "userId": "user_test_002",
+      "type": "rent",
+      "status": "failed",
+      "amount": 250000,
+      "currency": "USD",
+      "frequency": "monthly",
+      "dueDate": "2024-02-01T00:00:00.000Z",
+      "paidDate": null,
+      "stripePaymentIntentId": "pi_test_789",
+      "paymentMethodId": "pm_test_789",
+      "failureReason": "insufficient_funds",
+      "retryCount": 1,
+      "metadata": {
+        "propertyName": "Test Property 1",
+        "tenantName": "Jane Smith",
+        "rentPeriod": "February 2024",
+        "paymentProcessor": "stripe",
+        "paymentMethod": "card"
+      },
+      "createdAt": "2024-01-31T10:00:00.000Z",
+      "updatedAt": "2024-01-31T10:05:00.000Z"
+    },
+    {
+      "id": "pay_test_004",
+      "applicationId": "app_test_003",
+      "propertyId": "prop_test_002",
+      "userId": "user_test_003",
+      "type": "commission",
+      "status": "authorized",
+      "amount": 75000,
+      "currency": "USD",
+      "frequency": "one_time",
+      "dueDate": "2024-02-15T00:00:00.000Z",
+      "paidDate": null,
+      "stripePaymentIntentId": "pi_test_101",
+      "paymentMethodId": "pm_test_101",
+      "retryCount": 0,
+      "metadata": {
+        "propertyName": "Test Property 2",
+        "agentName": "Bob Wilson",
+        "commissionRate": "3",
+        "paymentProcessor": "stripe",
+        "paymentMethod": "card"
+      },
+      "createdAt": "2024-02-14T16:00:00.000Z",
+      "updatedAt": "2024-02-14T16:01:00.000Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_test_001",
+      "paymentId": "pay_test_001",
+      "type": "capture",
+      "status": "completed",
+      "amount": 5000,
+      "currency": "USD",
+      "description": "Application fee payment",
+      "stripeTransactionId": "ch_test_123",
+      "processorResponse": {
+        "authorizationCode": "AUTH123",
+        "avsResult": "Y",
+        "cvcResult": "Y"
+      },
+      "ipAddress": "192.168.1.1",
+      "riskScore": 15,
+      "metadata": {
+        "cardLast4": "4242",
+        "cardBrand": "visa",
+        "processingFee": 250
+      },
+      "errorCode": null,
+      "errorMessage": null,
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": "txn_test_002",
+      "paymentId": "pay_test_003",
+      "type": "authorization",
+      "status": "failed",
+      "amount": 250000,
+      "currency": "USD",
+      "description": "Monthly rent payment",
+      "stripeTransactionId": "ch_test_789",
+      "processorResponse": {
+        "declineCode": "insufficient_funds",
+        "avsResult": "Y",
+        "cvcResult": "Y"
+      },
+      "ipAddress": "192.168.1.2",
+      "riskScore": 25,
+      "metadata": {
+        "cardLast4": "1234",
+        "cardBrand": "mastercard",
+        "processingFee": 0
+      },
+      "errorCode": "payment_failed",
+      "errorMessage": "The card has insufficient funds to complete this transaction",
+      "createdAt": "2024-01-31T10:05:00.000Z",
+      "updatedAt": "2024-01-31T10:05:00.000Z"
+    },
+    {
+      "id": "txn_test_003",
+      "paymentId": "pay_test_004",
+      "type": "authorization",
+      "status": "completed",
+      "amount": 75000,
+      "currency": "USD",
+      "description": "Agent commission payment",
+      "stripeTransactionId": "ch_test_101",
+      "processorResponse": {
+        "authorizationCode": "AUTH456",
+        "avsResult": "Y",
+        "cvcResult": "Y"
+      },
+      "ipAddress": "192.168.1.3",
+      "riskScore": 20,
+      "metadata": {
+        "cardLast4": "5678",
+        "cardBrand": "amex",
+        "processingFee": 1875
+      },
+      "errorCode": null,
+      "errorMessage": null,
+      "createdAt": "2024-02-14T16:01:00.000Z",
+      "updatedAt": "2024-02-14T16:01:00.000Z"
+    }
+  ]
+}

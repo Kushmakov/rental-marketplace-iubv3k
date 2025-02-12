@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Material Design 3.0 Theme Implementation
+    Package: com.google.android.material:material:1.9.0
+    
+    Light theme definition for Project X rental marketplace application with:
+    - Material Design 3.0 color system
+    - Dynamic color support
+    - Accessibility compliance (WCAG 2.1 Level AA)
+    - RTL layout support
+    - Custom component styling
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme -->
+    <style name="Theme.ProjectX" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Color system -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:colorBackground">@color/background_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:navigationBarColor">@color/surface_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+
+        <!-- Component styles -->
+        <item name="materialButtonStyle">@style/Widget.ProjectX.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.ProjectX.TextField</item>
+        <item name="materialCardViewStyle">@style/Widget.ProjectX.Card</item>
+
+        <!-- Shape appearance -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.ProjectX.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.ProjectX.MediumComponent</item>
+
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.ProjectX.Headline1</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.ProjectX.Body1</item>
+
+        <!-- RTL Support -->
+        <item name="android:layoutDirection">locale</item>
+        <item name="android:textDirection">firstStrong</item>
+    </style>
+
+    <!-- Theme variant without action bar -->
+    <style name="Theme.ProjectX.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <!-- App bar overlay theme -->
+    <style name="Theme.ProjectX.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/text_on_primary</item>
+        <item name="colorControlNormal">@color/text_on_primary</item>
+        <item name="elevationOverlay">@color/scrim</item>
+    </style>
+
+    <!-- Popup overlay theme -->
+    <style name="Theme.ProjectX.PopupOverlay" parent="ThemeOverlay.Material3.Light">
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:background">@color/surface_light</item>
+        <item name="android:textDirection">locale</item>
+        <item name="popupMenuBackground">@color/surface_light</item>
+    </style>
+
+    <!-- Shape appearances -->
+    <style name="ShapeAppearance.ProjectX.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.ProjectX.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+</resources>

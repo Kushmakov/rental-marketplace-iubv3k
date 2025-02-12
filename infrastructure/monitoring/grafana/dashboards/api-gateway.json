@@ -1,0 +1,287 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "API Gateway monitoring dashboard with comprehensive performance metrics and SLA tracking",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Request Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"api-gateway\"}[5m])",
+          "legendFormat": "{{method}} {{path}}",
+          "interval": "",
+          "refId": "A"
+        }
+      ],
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Requests/sec"
+        },
+        {
+          "format": "short",
+          "label": null
+        }
+      ],
+      "fill": 1,
+      "linewidth": 1
+    },
+    {
+      "title": "Response Time Distribution",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"api-gateway\"}[5m]))",
+          "legendFormat": "95th percentile",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"api-gateway\"}[5m]))",
+          "legendFormat": "99th percentile",
+          "refId": "B"
+        }
+      ],
+      "yaxes": [
+        {
+          "format": "s",
+          "label": "Response Time",
+          "min": 0
+        },
+        {
+          "format": "short",
+          "label": null
+        }
+      ],
+      "thresholds": [
+        {
+          "value": 2,
+          "colorMode": "critical",
+          "op": "gt",
+          "fill": true,
+          "line": true,
+          "yaxis": "left"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate Analysis",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{job=\"api-gateway\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"api-gateway\"}[5m])) * 100",
+          "legendFormat": "Error %",
+          "refId": "A"
+        }
+      ],
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": "Error Rate",
+          "min": 0,
+          "max": 100
+        },
+        {
+          "format": "short",
+          "label": null
+        }
+      ],
+      "thresholds": [
+        {
+          "value": 1,
+          "colorMode": "critical",
+          "op": "gt",
+          "fill": true,
+          "line": true,
+          "yaxis": "left"
+        }
+      ]
+    },
+    {
+      "title": "Rate Limiting Metrics",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "rate(http_requests_throttled_total{job=\"api-gateway\"}[5m])",
+          "legendFormat": "Throttled Requests",
+          "refId": "A"
+        }
+      ],
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Requests/sec"
+        },
+        {
+          "format": "short",
+          "label": null
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": ["api", "gateway", "monitoring"],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(http_requests_total, service)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": false
+      },
+      {
+        "name": "status_code",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(http_requests_total, status)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": true
+      },
+      {
+        "name": "endpoint",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(http_requests_total, path)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": true
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "API Gateway Monitoring",
+  "uid": "api_gateway_dashboard",
+  "version": 2,
+  "alerting": {
+    "alerts": [
+      {
+        "name": "High Error Rate Alert",
+        "conditions": [
+          {
+            "evaluator": {
+              "type": "gt",
+              "params": [1]
+            },
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg",
+              "params": []
+            }
+          }
+        ],
+        "notifications": [
+          {
+            "uid": "slack_alerts",
+            "type": "slack"
+          },
+          {
+            "uid": "pagerduty_alerts",
+            "type": "pagerduty"
+          }
+        ],
+        "message": "Error rate exceeded 1% threshold",
+        "frequency": "1m"
+      },
+      {
+        "name": "SLA Latency Breach",
+        "conditions": [
+          {
+            "evaluator": {
+              "type": "gt",
+              "params": [2]
+            },
+            "query": {
+              "params": ["B", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg",
+              "params": []
+            }
+          }
+        ],
+        "notifications": [
+          {
+            "uid": "slack_alerts",
+            "type": "slack"
+          },
+          {
+            "uid": "pagerduty_alerts",
+            "type": "pagerduty"
+          }
+        ],
+        "message": "API response time exceeded 2s SLA threshold",
+        "frequency": "1m"
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+# Prometheus Alerting Rules v2.45.0
+# Defines comprehensive alert conditions for infrastructure, service and business metrics
+
+groups:
+  # Infrastructure resource utilization alerts
+  - name: infrastructure_alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: instance:node_cpu_utilization:avg5m > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: infrastructure 
+          team: platform
+        annotations:
+          summary: High CPU usage detected
+          description: CPU usage is above 80% for 5 minutes
+          runbook_url: runbooks/high-cpu-usage
+
+      - alert: HighMemoryUsage
+        expr: instance:node_memory_utilization:avg5m > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          category: infrastructure
+          team: platform
+        annotations:
+          summary: High memory usage detected
+          description: Memory usage is above 85% for 5 minutes
+          runbook_url: runbooks/high-memory-usage
+
+      - alert: LowDiskSpace
+        expr: instance:node_filesystem_free:ratio < 0.15
+        for: 10m
+        labels:
+          severity: critical
+          category: infrastructure
+          team: platform
+        annotations:
+          summary: Low disk space detected
+          description: Free disk space is below 15%
+          runbook_url: runbooks/low-disk-space
+
+  # Service performance and reliability alerts
+  - name: service_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: api_error_rate:5m > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          category: reliability
+          team: backend
+        annotations:
+          summary: High API error rate detected
+          description: Error rate is above 1% for 5 minutes
+          runbook_url: runbooks/high-error-rate
+
+      - alert: APILatencyHigh
+        expr: service:latency:p95:5m > 2
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+          team: backend
+        annotations:
+          summary: High API latency detected
+          description: 95th percentile latency is above 2 seconds SLA threshold
+          runbook_url: runbooks/high-api-latency
+
+      - alert: ServiceUnavailable
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+          team: platform
+        annotations:
+          summary: Service is down
+          description: Service has been unavailable for 1 minute affecting 99.9% uptime SLA
+          runbook_url: runbooks/service-unavailable
+
+  # Business KPI and success criteria alerts
+  - name: business_alerts
+    rules:
+      - alert: LowConversionRate
+        expr: application_conversion_rate:1h < 0.4
+        for: 1h
+        labels:
+          severity: warning
+          category: business
+          team: product
+        annotations:
+          summary: Low application conversion rate
+          description: Application conversion rate below 40% target for 1 hour
+          dashboard_url: dashboards/conversion-metrics
+
+      - alert: LowPaymentVolume
+        expr: payment_transaction_volume:1h < 50000
+        for: 1h
+        labels:
+          severity: warning
+          category: business
+          team: finance
+        annotations:
+          summary: Low payment transaction volume
+          description: Payment volume below $50K/hour target affecting revenue goals
+          dashboard_url: dashboards/payment-metrics

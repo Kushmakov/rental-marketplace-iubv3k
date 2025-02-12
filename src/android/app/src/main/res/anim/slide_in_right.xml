@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Slide-in animation from right edge of screen
+    Used for activity/fragment transitions when navigating forward
+    Duration: 300ms following Material Design guidelines
+    Interpolator: Decelerate for natural motion
+    Hardware acceleration recommended for optimal performance
+    Supports API 16+ with enhanced performance on API 21+
+    Respects system animation scale and reduced motion preferences
+-->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="100%p"
+    android:toXDelta="0"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="300"
+    android:interpolator="@android:anim/decelerate_interpolator" />

@@ -1,0 +1,179 @@
+{
+  "applications": [
+    {
+      "id": "app-001",
+      "applicantId": "user-001",
+      "unitId": "unit-001",
+      "status": "SUBMITTED",
+      "verificationStatus": "IN_PROGRESS",
+      "monthlyIncome": 8000,
+      "creditScore": 720,
+      "employmentDetails": {
+        "employerName": "Tech Corp",
+        "position": "Software Engineer",
+        "startDate": "2022-01-15T00:00:00.000Z",
+        "employmentType": "FULL_TIME",
+        "contactPhone": "+1-555-0123",
+        "contactEmail": "hr@techcorp.com"
+      },
+      "documents": [
+        {
+          "id": "doc-001",
+          "type": "ID_PROOF",
+          "url": "https://storage.example.com/documents/id-001.pdf",
+          "fileName": "drivers-license.pdf",
+          "uploadedAt": "2023-09-15T14:30:00.000Z",
+          "verificationStatus": "COMPLETED"
+        },
+        {
+          "id": "doc-002",
+          "type": "INCOME_PROOF",
+          "url": "https://storage.example.com/documents/income-001.pdf",
+          "fileName": "paystubs.pdf",
+          "uploadedAt": "2023-09-15T14:35:00.000Z",
+          "verificationStatus": "IN_PROGRESS"
+        }
+      ],
+      "preferredMoveInDate": "2023-10-01T00:00:00.000Z",
+      "notes": "Looking for a 12-month lease",
+      "createdAt": "2023-09-15T14:30:00.000Z",
+      "updatedAt": "2023-09-15T14:35:00.000Z"
+    },
+    {
+      "id": "app-002",
+      "applicantId": "user-002",
+      "unitId": "unit-002",
+      "status": "REJECTED",
+      "verificationStatus": "FAILED",
+      "monthlyIncome": 4500,
+      "creditScore": 580,
+      "employmentDetails": {
+        "employerName": "Self Employed",
+        "position": "Consultant",
+        "startDate": "2023-01-01T00:00:00.000Z",
+        "employmentType": "SELF_EMPLOYED",
+        "contactPhone": "+1-555-0124",
+        "contactEmail": "invalid.email"
+      },
+      "documents": [
+        {
+          "id": "doc-003",
+          "type": "ID_PROOF",
+          "url": "https://storage.example.com/documents/id-002.pdf",
+          "fileName": "expired-passport.pdf",
+          "uploadedAt": "2023-09-14T10:00:00.000Z",
+          "verificationStatus": "FAILED",
+          "verificationNotes": "Expired identification document"
+        }
+      ],
+      "preferredMoveInDate": "2023-10-15T00:00:00.000Z",
+      "notes": "Application rejected due to failed verification",
+      "reviewedBy": "agent-002",
+      "reviewedAt": "2023-09-14T15:00:00.000Z",
+      "createdAt": "2023-09-14T10:00:00.000Z",
+      "updatedAt": "2023-09-14T15:00:00.000Z"
+    },
+    {
+      "id": "app-003",
+      "applicantId": "user-003",
+      "unitId": "unit-003",
+      "status": "APPROVED",
+      "verificationStatus": "COMPLETED",
+      "monthlyIncome": 9500,
+      "creditScore": 750,
+      "employmentDetails": {
+        "employerName": "Finance Plus",
+        "position": "Financial Analyst",
+        "startDate": "2020-03-15T00:00:00.000Z",
+        "employmentType": "FULL_TIME",
+        "contactPhone": "+1-555-0125",
+        "contactEmail": "hr@financeplus.com"
+      },
+      "documents": [
+        {
+          "id": "doc-005",
+          "type": "ID_PROOF",
+          "url": "https://storage.example.com/documents/id-003.pdf",
+          "fileName": "state-id.pdf",
+          "uploadedAt": "2023-09-10T09:00:00.000Z",
+          "verificationStatus": "COMPLETED"
+        },
+        {
+          "id": "doc-006",
+          "type": "INCOME_PROOF",
+          "url": "https://storage.example.com/documents/income-002.pdf",
+          "fileName": "w2.pdf",
+          "uploadedAt": "2023-09-10T09:05:00.000Z",
+          "verificationStatus": "COMPLETED"
+        }
+      ],
+      "preferredMoveInDate": "2023-11-01T00:00:00.000Z",
+      "notes": "Approved with excellent credit score",
+      "reviewedBy": "agent-001",
+      "reviewedAt": "2023-09-12T16:00:00.000Z",
+      "createdAt": "2023-09-10T09:00:00.000Z",
+      "updatedAt": "2023-09-12T16:00:00.000Z"
+    },
+    {
+      "id": "app-004",
+      "applicantId": "user-004",
+      "unitId": "unit-004",
+      "status": "DRAFT",
+      "verificationStatus": "PENDING",
+      "monthlyIncome": 6500,
+      "creditScore": 680,
+      "employmentDetails": {
+        "employerName": "Retail Corp",
+        "position": "Store Manager",
+        "startDate": "2021-06-01T00:00:00.000Z",
+        "employmentType": "FULL_TIME",
+        "contactPhone": "+1-555-0126",
+        "contactEmail": "hr@retailcorp.com"
+      },
+      "documents": [],
+      "preferredMoveInDate": "2023-12-01T00:00:00.000Z",
+      "notes": "Application in draft state",
+      "createdAt": "2023-09-16T10:00:00.000Z",
+      "updatedAt": "2023-09-16T10:00:00.000Z"
+    },
+    {
+      "id": "app-005",
+      "applicantId": "user-005",
+      "unitId": "unit-005",
+      "status": "UNDER_REVIEW",
+      "verificationStatus": "IN_PROGRESS",
+      "monthlyIncome": 7200,
+      "creditScore": 700,
+      "employmentDetails": {
+        "employerName": "Education First",
+        "position": "Teacher",
+        "startDate": "2019-08-15T00:00:00.000Z",
+        "employmentType": "FULL_TIME",
+        "contactPhone": "+1-555-0127",
+        "contactEmail": "hr@educationfirst.com"
+      },
+      "documents": [
+        {
+          "id": "doc-007",
+          "type": "ID_PROOF",
+          "url": "https://storage.example.com/documents/id-004.pdf",
+          "fileName": "passport.pdf",
+          "uploadedAt": "2023-09-13T11:00:00.000Z",
+          "verificationStatus": "COMPLETED"
+        },
+        {
+          "id": "doc-008",
+          "type": "EMPLOYMENT_PROOF",
+          "url": "https://storage.example.com/documents/employment-001.pdf",
+          "fileName": "contract.pdf",
+          "uploadedAt": "2023-09-13T11:05:00.000Z",
+          "verificationStatus": "IN_PROGRESS"
+        }
+      ],
+      "preferredMoveInDate": "2023-11-15T00:00:00.000Z",
+      "notes": "Application under review with employment verification pending",
+      "createdAt": "2023-09-13T11:00:00.000Z",
+      "updatedAt": "2023-09-13T11:05:00.000Z"
+    }
+  ]
+}

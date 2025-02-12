@@ -1,0 +1,121 @@
+.git
+.gitignore
+.gitattributes
+.github
+.gitlab-ci.yml
+
+# Dependencies and Package Management
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+*.log
+package-lock.json
+yarn.lock
+lerna-debug.log
+
+# Development Configuration
+.env
+.env.*
+.env.*.local
+*.env
+nodemon.json
+jest.config.ts
+.eslintrc*
+.prettierrc*
+tsconfig*.json
+lerna.json
+.eslintcache
+babel.config.js
+webpack.config.js
+
+# Test Files
+test
+tests
+__tests__
+__mocks__
+coverage
+*.test.ts
+*.spec.ts
+*.mock.ts
+test-results
+jest-*.json
+
+# Build Output
+dist
+build
+*.tsbuildinfo
+.cache
+.next
+out
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+docs
+*.md
+architecture.md
+api-docs
+swagger.json
+openapi.yaml
+
+# IDE and Editor Files
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.settings
+*.sublime-*
+
+# Docker Files
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+.dockerignore
+k8s
+kubernetes
+helm
+
+# Security and Credentials
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.crt
+*.ca
+*.cert
+
+# Workspace Configuration
+.husky
+.lint-staged
+.editorconfig
+.prettierrc
+.nvmrc
+.tool-versions
+
+# Temporary Files
+tmp
+temp
+*.tmp
+*.temp
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS Generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

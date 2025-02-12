@@ -1,0 +1,303 @@
+{
+  "id": null,
+  "uid": "services-dashboard",
+  "title": "Project X Services Dashboard",
+  "tags": ["microservices", "monitoring", "project-x", "sla"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "title": "Service Health Status",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg_over_time(up{job=~\".*-service\"}[24h]) * 100",
+          "legendFormat": "{{job}} Uptime %"
+        }
+      ],
+      "thresholds": {
+        "steps": [
+          {
+            "value": null,
+            "color": "red"
+          },
+          {
+            "value": 99.9,
+            "color": "green"
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "title": "Service Response Times",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum{job=~\".*-service\"}[5m]) / rate(http_request_duration_seconds_count{job=~\".*-service\"}[5m])",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "alert": {
+        "name": "High Latency Alert",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [2]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-high"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      }
+    },
+    {
+      "title": "Error Rates",
+      "type": "graph", 
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status=~\"5..\", job=~\".*-service\"}[5m])) by (job) / sum(rate(http_requests_total{job=~\".*-service\"}[5m])) by (job) * 100",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "alert": {
+        "name": "High Error Rate",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [1]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-high"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      }
+    },
+    {
+      "title": "CPU Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container=~\".*-service\"}[5m])) by (container) * 100",
+          "legendFormat": "{{container}}"
+        }
+      ],
+      "alert": {
+        "name": "High CPU Usage",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [80]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-medium"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      }
+    },
+    {
+      "title": "Memory Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(container_memory_usage_bytes{container=~\".*-service\"}) by (container) / sum(container_memory_limit_bytes{container=~\".*-service\"}) by (container) * 100",
+          "legendFormat": "{{container}}"
+        }
+      ],
+      "alert": {
+        "name": "High Memory Usage",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [85]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-medium"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      }
+    },
+    {
+      "title": "Disk Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(container_fs_usage_bytes{container=~\".*-service\"}) by (container) / sum(container_fs_limit_bytes{container=~\".*-service\"}) by (container) * 100",
+          "legendFormat": "{{container}}"
+        }
+      ],
+      "alert": {
+        "name": "High Disk Usage",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [85]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-medium"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      }
+    },
+    {
+      "title": "Queue Depth",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "aws_sqs_approximate_number_of_messages_visible{queue=~\".*-queue\"}",
+          "legendFormat": "{{queue}}"
+        }
+      ],
+      "alert": {
+        "name": "High Queue Depth",
+        "conditions": [
+          {
+            "type": "query",
+            "query": {
+              "params": ["A", "5m", "now"]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "evaluator": {
+              "type": ">",
+              "params": [1000]
+            }
+          }
+        ],
+        "notifications": ["pagerduty-medium"]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(up, job)",
+        "regex": ".*-service",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "interval",
+        "type": "interval",
+        "query": "1m,5m,10m,30m,1h,6h,12h,1d",
+        "current": "5m"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "links": [
+    {
+      "title": "Service Documentation",
+      "url": "/docs/services",
+      "icon": "doc"
+    },
+    {
+      "title": "Runbooks",
+      "url": "/runbooks",
+      "icon": "book"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "name": "Deployments",
+        "datasource": "Prometheus",
+        "expr": "changes(kube_deployment_status_replicas_available{namespace=~\".*\"}[5m]) > 0",
+        "iconColor": "rgb(255, 96, 96)",
+        "enable": true
+      }
+    ]
+  }
+}

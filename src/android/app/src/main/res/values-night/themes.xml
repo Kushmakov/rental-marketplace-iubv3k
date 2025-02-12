@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Material Design 3.0 Dark Theme Implementation
+    Package: com.google.android.material:material:1.9.0
+    
+    OLED-optimized dark theme with dynamic color support and proper elevation overlays
+    following Material Design 3.0 guidelines for better battery efficiency and readability
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base dark theme -->
+    <style name="Theme.ProjectX" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Color system -->
+        <item name="colorPrimary">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_variant_dark</item>
+        <item name="colorSecondary">@color/secondary_dark</item>
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorError">@color/error_dark</item>
+
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/surface_dark</item>
+        <item name="android:navigationBarColor">@color/surface_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Enable elevation overlays -->
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/surface_dark</item>
+
+        <!-- Component styles -->
+        <item name="materialButtonStyle">@style/Widget.ProjectX.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.ProjectX.TextField</item>
+        <item name="materialCardViewStyle">@style/Widget.ProjectX.Card</item>
+        <item name="bottomNavigationStyle">@style/Widget.ProjectX.BottomNavigation</item>
+        <item name="chipStyle">@style/Widget.ProjectX.Chip</item>
+    </style>
+
+    <!-- Theme variant without action bar -->
+    <style name="Theme.ProjectX.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- App bar overlay theme -->
+    <style name="Theme.ProjectX.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="colorControlNormal">@color/text_primary_dark</item>
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
+
+    <!-- Popup overlay theme -->
+    <style name="Theme.ProjectX.PopupOverlay" parent="ThemeOverlay.Material3.Dark">
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:background">@color/surface_1_dark</item>
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
+
+</resources>

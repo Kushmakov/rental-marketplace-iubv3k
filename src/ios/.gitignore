@@ -1,0 +1,73 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+xcshareddata/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Xcode Project
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.app.dSYM.zip
+*.ipa.dSYM.zip
+*.dSYM
+
+# macOS
+.DS_Store
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Certificates & Provisioning
+*.mobileprovision
+*.cer
+*.p12
+
+# Environment & Configuration
+.env
+GoogleService-Info.plist
+*/Configuration.plist
+*/Secrets.plist
+private_keys/
+
+# Code Coverage
+*.gcda
+*.gcno
+TestResults/
+
+# Xcode Timeline
+timeline.xctimeline
+playground.xcworkspace
+
+# Build
+DerivedData/
+build/
+
+# Project-specific
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/

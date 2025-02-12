@@ -1,0 +1,204 @@
+/* Project X Rental Marketplace Animations
+ * Version: 1.0.0
+ * Implements Material Design motion principles with performance optimizations
+ */
+
+@import './variables.css';
+
+/* Keyframe Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slide-in-up {
+  from {
+    transform: translate3d(0, 20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-down {
+  from {
+    transform: translate3d(0, -20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translate3d(-20px, 0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translate3d(20px, 0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale3d(0.95, 0.95, 1);
+    opacity: 0;
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Animation Utility Classes */
+.fade-in {
+  animation: fade-in var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: opacity;
+  contain: layout;
+}
+
+.fade-out {
+  animation: fade-out var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: opacity;
+  contain: layout;
+}
+
+.slide-in-up {
+  animation: slide-in-up var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+.slide-in-down {
+  animation: slide-in-down var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+.slide-in-left {
+  animation: slide-in-left var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+.slide-in-right {
+  animation: slide-in-right var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+.scale-in {
+  animation: scale-in var(--animation-duration-normal) var(--animation-timing-default);
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+.rotate {
+  animation: rotate 1s linear infinite;
+  will-change: transform;
+  contain: layout;
+}
+
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  background-size: 200% 100%;
+}
+
+/* Transition Utility Classes */
+.transition-all {
+  transition: all var(--transition-duration-normal) var(--transition-timing-default);
+  will-change: auto;
+}
+
+.transition-transform {
+  transition: transform var(--transition-duration-normal) var(--transition-timing-default);
+  will-change: transform;
+  contain: layout;
+}
+
+.transition-opacity {
+  transition: opacity var(--transition-duration-normal) var(--transition-timing-default);
+  will-change: opacity;
+  contain: layout;
+}
+
+.transition-colors {
+  transition: 
+    background-color var(--transition-duration-normal) var(--transition-timing-default),
+    border-color var(--transition-duration-normal) var(--transition-timing-default),
+    color var(--transition-duration-normal) var(--transition-timing-default);
+}
+
+.transition-shadow {
+  transition: box-shadow var(--transition-duration-normal) var(--transition-timing-default);
+}
+
+.transition-scale {
+  transition: transform var(--transition-duration-normal) var(--transition-timing-default);
+  will-change: transform;
+  contain: layout;
+}
+
+.transition-position {
+  transition: 
+    top var(--transition-duration-normal) var(--transition-timing-default),
+    left var(--transition-duration-normal) var(--transition-timing-default),
+    right var(--transition-duration-normal) var(--transition-timing-default),
+    bottom var(--transition-duration-normal) var(--transition-timing-default);
+  will-change: position;
+  contain: layout;
+}
+
+/* Performance Optimization Classes */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.content-visibility {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Accessibility - Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

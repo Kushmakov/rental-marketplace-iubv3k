@@ -1,0 +1,73 @@
+# Build outputs
+/build/*
+/captures/*
+/navigation/safeargs/*
+*.apk
+*.aab
+*.ap_
+
+# Generated files
+/generated/*
+bin/
+gen/
+out/
+
+# Local configuration
+local.properties
+.gradle/
+proguard/
+*.log
+
+# IDE files
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Security sensitive files
+/debug/
+/release/
+*.keystore
+*.jks
+
+# Crashlytics
+crashlytics.properties
+crashlytics-build.properties
+com_crashlytics_export_strings.xml
+fabric.properties
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Android Studio captures folder
+captures/
+
+# External native build folder
+.externalNativeBuild/
+.cxx/
+
+# Google Services
+google-services.json
+
+# Version control
+.svn/
+.hg/
+.git/
+CVS/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Misc
+*.bak
+*.tmp
+*.temp
+*.swp
+*~

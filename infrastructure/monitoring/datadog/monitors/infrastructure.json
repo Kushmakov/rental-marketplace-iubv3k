@@ -1,0 +1,158 @@
+{
+  "monitors": [
+    {
+      "name": "EKS Cluster Health Monitor",
+      "type": "service check",
+      "query": "\"aws.eks.cluster.health\".over(\"cluster:projectx-*\").last(3).count_by_status()",
+      "message": "EKS cluster health check failed. \n\nTroubleshooting Steps:\n1. Check node status\n2. Review pod deployments\n3. Verify control plane health\n\nRunbook: https://runbooks.projectx.com/eks-health\n\n@oncall-infrastructure",
+      "tags": [
+        "env:production",
+        "monitor:eks-health",
+        "service:kubernetes",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 2,
+          "warning": 1
+        },
+        "notify_no_data": true,
+        "renotify_interval": 300,
+        "include_tags": true,
+        "evaluation_delay": 60
+      }
+    },
+    {
+      "name": "RDS Database Performance Monitor",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:aws.rds.cpuutilization{dbinstanceidentifier:projectx-*} > 80",
+      "message": "RDS instance performance degraded.\n\nMetrics:\n- CPU Utilization: {{value}}%\n- Instance: {{dbinstanceidentifier}}\n\nTroubleshooting Steps:\n1. Check query performance\n2. Review connection count\n3. Analyze slow queries\n\nRunbook: https://runbooks.projectx.com/rds-performance\n\n@oncall-database",
+      "tags": [
+        "env:production",
+        "monitor:rds-performance",
+        "service:database",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 80,
+          "warning": 70
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 60,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "Redis Cache Memory Usage",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:aws.elasticache.database_memory_usage_percentage{cache-cluster:projectx-*} > 85",
+      "message": "Redis cache memory usage exceeds threshold.\n\nMetrics:\n- Memory Usage: {{value}}%\n- Cluster: {{cache-cluster}}\n\nTroubleshooting Steps:\n1. Review memory usage patterns\n2. Check key expiration policies\n3. Consider scaling up\n\nRunbook: https://runbooks.projectx.com/redis-memory\n\n@oncall-infrastructure",
+      "tags": [
+        "env:production",
+        "monitor:redis-memory",
+        "service:cache",
+        "criticality:2"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 85,
+          "warning": 75
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 120
+      }
+    },
+    {
+      "name": "API Gateway 5xx Errors",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:aws.apigateway.5xxerror{apiname:projectx-*} > 10",
+      "message": "High rate of 5xx errors detected in API Gateway.\n\nMetrics:\n- Error Count: {{value}}\n- API: {{apiname}}\n\nTroubleshooting Steps:\n1. Check service logs\n2. Review error patterns\n3. Verify service health\n\nRunbook: https://runbooks.projectx.com/api-errors\n\n@oncall-platform",
+      "tags": [
+        "env:production",
+        "monitor:api-errors",
+        "service:api-gateway",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 10,
+          "warning": 5
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 30
+      }
+    },
+    {
+      "name": "S3 Storage Bucket Size",
+      "type": "metric alert",
+      "query": "avg(last_30m):avg:aws.s3.bucket_size_bytes{bucket:projectx-*} > 1000000000000",
+      "message": "S3 bucket size approaching limit.\n\nMetrics:\n- Size: {{value}} bytes\n- Bucket: {{bucket}}\n\nActions Required:\n1. Review storage patterns\n2. Implement cleanup policies\n3. Consider archival strategy\n\nRunbook: https://runbooks.projectx.com/s3-storage\n\n@oncall-infrastructure",
+      "tags": [
+        "env:production",
+        "monitor:s3-storage",
+        "service:storage",
+        "criticality:2"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 1000000000000,
+          "warning": 800000000000
+        },
+        "notify_no_data": false,
+        "evaluation_delay": 1800
+      }
+    }
+  ],
+  "synthetics": [
+    {
+      "name": "Infrastructure Health Check",
+      "type": "api",
+      "request": {
+        "method": "GET",
+        "url": "https://health.projectx.com/infrastructure",
+        "timeout": 30,
+        "retry": {
+          "count": 2,
+          "interval": 300
+        },
+        "headers": {
+          "X-Monitoring-Token": "{{MONITORING_TOKEN}}"
+        }
+      },
+      "assertions": [
+        {
+          "type": "statusCode",
+          "operator": "is",
+          "target": 200
+        },
+        {
+          "type": "responseTime",
+          "operator": "lessThan",
+          "target": 2000
+        },
+        {
+          "type": "body",
+          "operator": "validatesJSONPath",
+          "target": "$.status",
+          "targetValue": "healthy"
+        }
+      ],
+      "locations": [
+        "aws:us-east-1",
+        "aws:us-west-2",
+        "aws:eu-west-1"
+      ],
+      "options": {
+        "tick_every": 60,
+        "min_failure_duration": 300,
+        "min_location_failed": 2,
+        "retry_count": 2,
+        "monitor_options": {
+          "renotify_interval": 120,
+          "notify_audit": true
+        }
+      }
+    }
+  ]
+}

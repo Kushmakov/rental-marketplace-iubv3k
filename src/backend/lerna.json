@@ -1,0 +1,47 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "1.0.0",
+  "npmClient": "npm",
+  "useWorkspaces": true,
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "version": {
+      "exact": true,
+      "conventionalCommits": true,
+      "message": "chore(release): publish %s",
+      "changelog": true,
+      "push": true,
+      "ignoreChanges": [
+        "**/*.md",
+        "**/__tests__/**"
+      ]
+    },
+    "publish": {
+      "conventionalCommits": true,
+      "message": "chore(release): publish",
+      "registry": "https://registry.npmjs.org/",
+      "allowBranch": [
+        "main",
+        "release/*"
+      ],
+      "yes": true,
+      "verifyAccess": true
+    },
+    "bootstrap": {
+      "npmClientArgs": [
+        "--no-package-lock"
+      ],
+      "hoist": true,
+      "noCi": false,
+      "nohoist": [
+        "@types/*"
+      ]
+    }
+  },
+  "stream": true,
+  "parallel": true,
+  "concurrency": 4,
+  "loglevel": "info"
+}

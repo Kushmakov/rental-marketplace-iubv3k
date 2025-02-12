@@ -1,0 +1,80 @@
+# Logstash Configuration v8.9.0
+# Project X Rental Platform - Production Configuration
+
+#----------------------
+# Node Settings
+#----------------------
+node.name: ${HOSTNAME}
+path.data: /var/lib/logstash
+path.logs: /var/log/logstash
+path.config: /etc/logstash/conf.d
+path.plugins: /usr/share/logstash/plugins
+
+#----------------------
+# Pipeline Settings
+#----------------------
+pipeline.id: main
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+pipeline.ordered: true
+pipeline.unsafe_shutdown: false
+pipeline.plugin_classloaders: true
+
+#----------------------
+# Queue Settings
+#----------------------
+queue.type: persisted
+queue.max_bytes: 1gb
+queue.checkpoint.writes: 1024
+dead_letter_queue.enable: true
+dead_letter_queue.max_bytes: 512mb
+
+#----------------------
+# Monitoring Settings
+#----------------------
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
+xpack.monitoring.elasticsearch.username: ${ELASTIC_USER}
+xpack.monitoring.elasticsearch.password: ${ELASTIC_PASSWORD}
+xpack.monitoring.elasticsearch.ssl.certificate_authority: /etc/logstash/certs/ca.crt
+xpack.monitoring.elasticsearch.ssl.verification_mode: full
+xpack.monitoring.collection.interval: 10s
+xpack.monitoring.collection.pipeline.details.enabled: true
+
+#----------------------
+# HTTP API Settings
+#----------------------
+http.host: "0.0.0.0"
+http.port: 9600
+http.ssl.enabled: true
+http.ssl.keystore.path: /etc/logstash/certs/logstash.p12
+http.ssl.keystore.password: ${KEYSTORE_PASSWORD}
+
+#----------------------
+# Logging Settings
+#----------------------
+log.level: info
+log.format: json
+log.rotation.enabled: true
+log.rotation.max_size: 100mb
+log.rotation.max_files: 7
+
+#----------------------
+# Config Settings
+#----------------------
+config.reload.automatic: true
+config.reload.interval: 3s
+config.support_escapes: true
+config.debug: false
+config.validate_after_inactivity: 60
+
+#----------------------
+# API Settings
+#----------------------
+api.enabled: true
+api.http.host: "0.0.0.0"
+api.http.port: 9601
+api.auth.type: basic
+api.auth.basic.username: ${API_USER}
+api.auth.basic.password: ${API_PASSWORD}

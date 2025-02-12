@@ -1,0 +1,206 @@
+{
+  "properties": [
+    {
+      "id": "prop-001",
+      "name": "Luxury Downtown Apartments",
+      "description": "Modern luxury apartments in prime downtown location with stunning city views and premium amenities",
+      "type": "APARTMENT",
+      "status": "ACTIVE",
+      "ownerId": "owner-001",
+      "address": {
+        "street1": "123 Main Street",
+        "street2": null,
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94105",
+        "country": "USA"
+      },
+      "location": {
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "accuracy": 100
+      },
+      "yearBuilt": 2020,
+      "totalUnits": 50,
+      "amenities": [
+        "Gym",
+        "Pool",
+        "Parking",
+        "Security",
+        "Pet Friendly",
+        "EV Charging",
+        "Rooftop Deck"
+      ],
+      "images": [
+        {
+          "id": "img-001",
+          "url": "https://example.com/images/property1-main.jpg",
+          "type": "exterior",
+          "isPrimary": true,
+          "caption": "Building Exterior",
+          "order": 1
+        },
+        {
+          "id": "img-002",
+          "url": "https://example.com/images/property1-lobby.jpg",
+          "type": "interior",
+          "isPrimary": false,
+          "caption": "Elegant Lobby",
+          "order": 2
+        }
+      ],
+      "units": [
+        {
+          "id": "unit-001",
+          "propertyId": "prop-001",
+          "unitNumber": "101",
+          "floorNumber": 1,
+          "status": "AVAILABLE",
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "squareFeet": 1200,
+          "monthlyRent": 3500,
+          "securityDeposit": 5000,
+          "availableFrom": "2024-02-01T00:00:00.000Z",
+          "features": [
+            "Hardwood floors",
+            "Stainless appliances",
+            "In-unit laundry",
+            "Smart thermostat",
+            "Walk-in closet"
+          ],
+          "images": [
+            {
+              "id": "unit-img-001",
+              "url": "https://example.com/images/unit101-main.jpg",
+              "type": "interior",
+              "isPrimary": true,
+              "caption": "Living Room",
+              "order": 1,
+              "unitId": "unit-001"
+            }
+          ],
+          "lastUpdated": "2024-01-15T08:00:00.000Z"
+        }
+      ],
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-15T08:00:00.000Z"
+    },
+    {
+      "id": "prop-002",
+      "name": "Suburban Family Home",
+      "description": "Spacious single-family home in quiet residential neighborhood",
+      "type": "HOUSE",
+      "status": "PENDING",
+      "ownerId": "owner-002",
+      "address": {
+        "street1": "456 Oak Avenue",
+        "street2": null,
+        "city": "San Mateo",
+        "state": "CA",
+        "zipCode": "94403",
+        "country": "USA"
+      },
+      "location": {
+        "latitude": 37.5630,
+        "longitude": -122.3255,
+        "accuracy": 100
+      },
+      "yearBuilt": 1995,
+      "totalUnits": 1,
+      "amenities": [
+        "Garage",
+        "Backyard",
+        "Fireplace",
+        "Central AC"
+      ],
+      "images": [
+        {
+          "id": "img-003",
+          "url": "https://example.com/images/property2-main.jpg",
+          "type": "exterior",
+          "isPrimary": true,
+          "caption": "House Front View",
+          "order": 1
+        }
+      ],
+      "units": [
+        {
+          "id": "unit-002",
+          "propertyId": "prop-002",
+          "unitNumber": "main",
+          "floorNumber": null,
+          "status": "PENDING_APPROVAL",
+          "bedrooms": 4,
+          "bathrooms": 3,
+          "squareFeet": 2500,
+          "monthlyRent": 5000,
+          "securityDeposit": 7500,
+          "availableFrom": "2024-03-01T00:00:00.000Z",
+          "features": [
+            "Updated kitchen",
+            "Master suite",
+            "Family room",
+            "Attached garage"
+          ],
+          "images": [
+            {
+              "id": "unit-img-002",
+              "url": "https://example.com/images/house-interior.jpg",
+              "type": "interior",
+              "isPrimary": true,
+              "caption": "Kitchen View",
+              "order": 1,
+              "unitId": "unit-002"
+            }
+          ],
+          "lastUpdated": "2024-01-14T10:00:00.000Z"
+        }
+      ],
+      "createdAt": "2024-01-10T00:00:00.000Z",
+      "updatedAt": "2024-01-14T10:00:00.000Z"
+    },
+    {
+      "id": "prop-003",
+      "name": "Urban Condo Complex",
+      "description": "Modern condominiums with city access and premium finishes",
+      "type": "CONDO",
+      "status": "INACTIVE",
+      "ownerId": "owner-003",
+      "address": {
+        "street1": "789 Market Street",
+        "street2": "Suite 100",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94103",
+        "country": "USA"
+      },
+      "location": {
+        "latitude": 37.7833,
+        "longitude": -122.4167,
+        "accuracy": 100
+      },
+      "yearBuilt": 2018,
+      "totalUnits": 0,
+      "amenities": [
+        "Concierge",
+        "Package Room",
+        "Bike Storage",
+        "Common Area"
+      ],
+      "images": [
+        {
+          "id": "img-004",
+          "url": "https://example.com/images/property3-main.jpg",
+          "type": "exterior",
+          "isPrimary": true,
+          "caption": "Building Exterior",
+          "order": 1
+        }
+      ],
+      "units": [],
+      "createdAt": "2023-12-01T00:00:00.000Z",
+      "updatedAt": "2024-01-13T15:00:00.000Z"
+    }
+  ]
+}

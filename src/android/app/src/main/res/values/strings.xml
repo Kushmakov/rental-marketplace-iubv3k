@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Application Name -->
+    <string name="app_name">Project X</string>
+
+    <!-- Authentication Strings -->
+    <string name="auth_login">Log In</string>
+    <string name="auth_signup">Sign Up</string>
+    <string name="auth_email_hint">Enter your email address</string>
+    <string name="auth_password_hint">Password (minimum 8 characters)</string>
+    <string name="auth_forgot_password">Forgot your password?</string>
+
+    <!-- Navigation Labels -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_properties">Properties</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Property Related Strings -->
+    <string name="property_details">Property Details</string>
+    <string name="action_apply_now">Apply Now</string>
+    <string name="search_property_hint">Search by location, property name, or amenities</string>
+
+    <!-- Filter and Sort Options -->
+    <string name="filter_button_label">Filter (%1$d)</string>
+    <string name="sort_button_label">Sort: %1$s</string>
+    <string name="filter_price_range">Price Range</string>
+    <string name="filter_bedrooms">Bedrooms</string>
+    <string name="filter_bathrooms">Bathrooms</string>
+    <string name="filter_amenities">Amenities</string>
+    <string name="filter_pet_friendly">Pet Friendly</string>
+    <string name="filter_furnished">Furnished</string>
+    <string name="sort_price_ascending">Price: Low to High</string>
+    <string name="sort_price_descending">Price: High to Low</string>
+
+    <!-- Payment Related Strings -->
+    <string name="payment_screen_title">Payment Details</string>
+    <string name="payment_success_message">Payment successful! Transaction ID: %1$s</string>
+    <string name="payment_error_message">Payment failed. Please try again or contact support.</string>
+
+    <!-- Error Messages -->
+    <string name="error_network_connection">No internet connection. Please check your connection and try again.</string>
+    <string name="error_generic_message">Something went wrong. Please contact support at support@projectx.com</string>
+    <string name="validation_required_field">This field is required</string>
+
+    <!-- Action Buttons -->
+    <string name="action_retry">Retry</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_logout">Log Out</string>
+
+    <!-- Security -->
+    <string name="security_biometric_prompt">Please authenticate to continue</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_property_image">Property image showing %1$s</string>
+
+    <!-- Placeholders for Dynamic Content -->
+    <string name="property_title_format">%1$s - %2$s</string>
+    <string name="price_format">$%1$d/month</string>
+    <string name="bedroom_format">%1$d Bed</string>
+    <string name="bathroom_format">%1$d Bath</string>
+    <string name="notification_count_format">%1$d new notifications</string>
+
+    <!-- Empty State Messages -->
+    <string name="empty_search_results">No properties match your search criteria</string>
+    <string name="empty_notifications">No new notifications</string>
+    <string name="empty_favorites">No saved properties</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_logout_confirmation">Are you sure you want to log out?</string>
+    <string name="dialog_delete_confirmation">Are you sure you want to delete this item?</string>
+    <string name="dialog_application_confirmation">Submit rental application for %1$s?</string>
+
+    <!-- Form Labels -->
+    <string name="label_first_name">First Name</string>
+    <string name="label_last_name">Last Name</string>
+    <string name="label_phone">Phone Number</string>
+    <string name="label_address">Current Address</string>
+    <string name="label_employment">Employment Status</string>
+    <string name="label_income">Monthly Income</string>
+
+    <!-- Form Validation Messages -->
+    <string name="validation_invalid_email">Please enter a valid email address</string>
+    <string name="validation_invalid_phone">Please enter a valid phone number</string>
+    <string name="validation_password_requirements">Password must be at least 8 characters long and include uppercase, lowercase, number, and special character</string>
+    <string name="validation_income_required">Monthly income is required for application</string>
+
+    <!-- Success Messages -->
+    <string name="success_profile_updated">Profile updated successfully</string>
+    <string name="success_application_submitted">Application submitted successfully</string>
+    <string name="success_property_saved">Property saved to favorites</string>
+
+    <!-- Loading States -->
+    <string name="loading_properties">Loading properties…</string>
+    <string name="loading_application">Processing application…</string>
+    <string name="loading_payment">Processing payment…</string>
+    <string name="loading_profile">Loading profile…</string>
+</resources>

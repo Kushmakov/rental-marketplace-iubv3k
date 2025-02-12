@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    Property Detail Activity Layout
+    Material Components version: 1.9.0
+    AndroidX ConstraintLayout version: 2.1.4
+    AndroidX ViewPager2 version: 1.0.0
+    AndroidX Core version: 1.10.0
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:theme="@style/Theme.MaterialComponents.DayNight">
+
+    <!-- Image Carousel -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/imageCarousel"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:contentDescription="@string/property_images_carousel"
+        android:importantForAccessibility="yes"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Image Carousel Indicator -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/imageIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageCarousel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/spacing_unit_2x" />
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/contentScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/imageCarousel"
+        app:layout_constraintBottom_toTopOf="@id/actionButtons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_unit_2x">
+
+            <!-- Property Title -->
+            <TextView
+                android:id="@+id/propertyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceHeadline5"
+                android:textColor="?android:textColorPrimary"
+                android:accessibilityHeading="true"
+                android:textIsSelectable="true"
+                android:layout_marginBottom="@dimen/spacing_unit"
+                tools:text="Luxury Downtown Apartment" />
+
+            <!-- Property Price -->
+            <TextView
+                android:id="@+id/propertyPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceHeadline6"
+                android:textColor="?colorPrimary"
+                android:accessibilityLiveRegion="polite"
+                android:layout_marginBottom="@dimen/spacing_unit_2x"
+                tools:text="$2,400/month" />
+
+            <!-- Property Details -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_unit_2x"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardCornerRadius="@dimen/card_corner_radius">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_unit_2x">
+
+                    <TextView
+                        android:id="@+id/propertyDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?textAppearanceBody1"
+                        android:textColor="?android:textColorSecondary"
+                        tools:text="2 Bed • 2 Bath • 1,200 sq.ft" />
+
+                    <TextView
+                        android:id="@+id/propertyDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_unit"
+                        android:textAppearance="?textAppearanceBody2"
+                        android:textColor="?android:textColorSecondary"
+                        android:textIsSelectable="true" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Amenities Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/amenities"
+                android:textAppearance="?textAppearanceSubtitle1"
+                android:textColor="?android:textColorPrimary"
+                android:layout_marginBottom="@dimen/spacing_unit" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/amenitiesGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacing="@dimen/spacing_unit"
+                android:layout_marginBottom="@dimen/spacing_unit_4x" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:id="@+id/actionButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_unit_2x"
+        android:elevation="@dimen/card_elevation"
+        android:background="?colorSurface"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/favoriteButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/spacing_unit"
+            android:minHeight="@dimen/touch_target_min"
+            android:text="@string/save"
+            android:contentDescription="@string/add_to_favorites"
+            style="?materialButtonOutlinedStyle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/applyButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/spacing_unit"
+            android:minHeight="@dimen/touch_target_min"
+            android:text="@string/apply_now"
+            android:contentDescription="@string/apply_for_property"
+            style="?materialButtonStyle" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

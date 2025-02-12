@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rental-platform-config
+  namespace: rental-platform
+  labels:
+    app: rental-platform
+    version: "1.0.0"
+    environment: production
+data:
+  # Global Configuration
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  CONFIG_VERSION: "1.0.0"
+
+  # API Gateway Configuration
+  api-gateway.json: |
+    {
+      "port": 3000,
+      "host": "0.0.0.0",
+      "cors": {
+        "origin": ["https://*.projectx.com"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        "allowedHeaders": ["Content-Type", "Authorization", "X-Request-ID", "X-API-Key"],
+        "exposedHeaders": ["X-Total-Count", "X-Rate-Limit-Remaining", "X-Request-ID"],
+        "credentials": true,
+        "maxAge": 86400
+      },
+      "rateLimit": {
+        "windowMs": 900000,
+        "max": 1000,
+        "standardHeaders": true,
+        "legacyHeaders": false,
+        "skipSuccessfulRequests": false,
+        "keyGenerator": "ip",
+        "handler": "default"
+      },
+      "security": {
+        "helmet": {
+          "contentSecurityPolicy": true,
+          "crossOriginEmbedderPolicy": true,
+          "crossOriginOpenerPolicy": true,
+          "crossOriginResourcePolicy": true,
+          "dnsPrefetchControl": true,
+          "frameguard": true,
+          "hidePoweredBy": true,
+          "hsts": true,
+          "ieNoOpen": true,
+          "noSniff": true,
+          "referrerPolicy": true,
+          "xssFilter": true
+        }
+      },
+      "services": {
+        "auth": {
+          "url": "http://auth-service:3001",
+          "timeout": 5000,
+          "healthCheck": "/health",
+          "retries": 3
+        },
+        "listing": {
+          "url": "http://listing-service:3002",
+          "timeout": 5000,
+          "healthCheck": "/health",
+          "retries": 3
+        },
+        "application": {
+          "url": "http://application-service:3003",
+          "timeout": 5000,
+          "healthCheck": "/health",
+          "retries": 3
+        },
+        "payment": {
+          "url": "http://payment-service:3004",
+          "timeout": 5000,
+          "healthCheck": "/health",
+          "retries": 3
+        },
+        "notification": {
+          "url": "http://notification-service:3005",
+          "timeout": 5000,
+          "healthCheck": "/health",
+          "retries": 3
+        }
+      },
+      "circuitBreaker": {
+        "timeout": 3000,
+        "errorThresholdPercentage": 50,
+        "resetTimeout": 30000
+      }
+    }
+
+  # Auth Service Configuration
+  auth-service.json: |
+    {
+      "port": 3001,
+      "host": "0.0.0.0",
+      "oauth": {
+        "pkceRequired": true,
+        "scope": ["profile", "email"],
+        "tokenExpiry": "24h",
+        "refreshTokenExpiry": "7d"
+      },
+      "mfa": {
+        "issuer": "Project X Rental Platform",
+        "digits": 6,
+        "step": 30,
+        "window": 1,
+        "algorithm": "SHA256",
+        "backupCodesCount": 10,
+        "qrCodeSize": 200,
+        "enforceForRoles": ["admin", "propertyManager"]
+      },
+      "password": {
+        "saltRounds": 12,
+        "minLength": 12,
+        "requireUppercase": true,
+        "requireLowercase": true,
+        "requireNumbers": true,
+        "requireSpecialChars": true,
+        "maxAttempts": 5,
+        "lockoutDuration": 900,
+        "historySize": 5
+      }
+    }
+
+  # Monitoring Configuration
+  monitoring.json: |
+    {
+      "enabled": true,
+      "metricsPath": "/metrics",
+      "collectDefaultMetrics": true,
+      "prometheusTimeout": 5000,
+      "labels": {
+        "environment": "production",
+        "version": "1.0.0"
+      },
+      "healthCheck": {
+        "path": "/health",
+        "includeInMetrics": true
+      }
+    }
+
+  # Logging Configuration
+  logging.json: |
+    {
+      "level": "info",
+      "format": "json",
+      "timestamp": true,
+      "colorize": false,
+      "includeRequestId": true,
+      "redactFields": ["password", "token", "apiKey"]
+    }
+
+  # Tracing Configuration
+  tracing.json: |
+    {
+      "enabled": true,
+      "serviceName": "rental-platform",
+      "samplingRate": 0.1
+    }
+
+  # Database Configuration
+  database.json: |
+    {
+      "application_name": "rental_platform",
+      "statement_timeout": 30000,
+      "query_timeout": 30000,
+      "connectionTimeoutMillis": 10000,
+      "keepalive": true,
+      "pool": {
+        "min": 2,
+        "max": 10,
+        "idleTimeoutMillis": 30000,
+        "connectionTimeoutMillis": 2000,
+        "maxUses": 7500
+      },
+      "ssl": true
+    }

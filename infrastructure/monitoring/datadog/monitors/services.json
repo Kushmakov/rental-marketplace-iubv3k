@@ -1,0 +1,170 @@
+{
+  "monitors": [
+    {
+      "name": "Service Health Monitor",
+      "type": "service check",
+      "query": "\"service.health\".over(\"*\").by(\"service\").last(3).count_by_status()",
+      "message": "Service health check failed for {{service.name}}. \nStatus: {{status}}\nEnvironment: {{environment}}\n\nPlease check:\n1. Service logs\n2. Infrastructure metrics\n3. Recent deployments\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:service-health",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 2,
+          "warning": 1
+        },
+        "notify_no_data": true,
+        "renotify_interval": 5,
+        "include_tags": true,
+        "evaluation_delay": 60
+      }
+    },
+    {
+      "name": "Service CPU Usage Monitor",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:system.cpu.user{*} by {service,environment} > 80",
+      "message": "High CPU usage detected for {{service.name}}.\nCurrent Usage: {{value}}%\nEnvironment: {{environment}}\n\nActions:\n1. Check service scaling\n2. Review recent traffic patterns\n3. Investigate performance bottlenecks\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:service-cpu",
+        "criticality:2"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 80,
+          "warning": 70
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 180,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "Service Memory Usage Monitor",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:system.mem.used{*} by {service,environment} > 85",
+      "message": "High memory usage detected for {{service.name}}.\nCurrent Usage: {{value}}%\nEnvironment: {{environment}}\n\nActions:\n1. Check for memory leaks\n2. Review service logs\n3. Consider scaling up\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:service-memory",
+        "criticality:2"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 85,
+          "warning": 75
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 180,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "Service Error Rate Monitor",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:trace.http.request.errors{*} by {service,environment}.as_count() / sum:trace.http.request.hits{*} by {service,environment}.as_count() * 100 > 1",
+      "message": "Error rate exceeds threshold for {{service.name}}.\nCurrent Rate: {{value}}%\nEnvironment: {{environment}}\n\nActions:\n1. Check error logs\n2. Review recent deployments\n3. Investigate upstream dependencies\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:service-errors",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 1,
+          "warning": 0.5
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 120,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "Service Response Time Monitor",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:trace.http.request.duration{*} by {service,environment} > 2",
+      "message": "Response time exceeds SLA for {{service.name}}.\nCurrent Latency: {{value}}s\nEnvironment: {{environment}}\n\nActions:\n1. Check service resources\n2. Review database performance\n3. Investigate network latency\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:service-latency",
+        "criticality:1"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 2,
+          "warning": 1.5
+        },
+        "notify_no_data": true,
+        "evaluation_delay": 60,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "Queue Depth Monitor",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:aws.sqs.approximate_number_of_messages_visible{*} by {queuename,environment} > 1000",
+      "message": "Queue depth exceeds threshold for {{queuename}}.\nCurrent Depth: {{value}}\nEnvironment: {{environment}}\n\nActions:\n1. Check consumer health\n2. Review processing rates\n3. Consider scaling consumers\n\n@pagerduty-service-alerts",
+      "tags": [
+        "env:production",
+        "monitor:queue-depth",
+        "criticality:2"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 1000,
+          "warning": 500
+        },
+        "notify_no_data": false,
+        "evaluation_delay": 300,
+        "include_tags": true
+      }
+    }
+  ],
+  "synthetics": [
+    {
+      "name": "Service Health Check",
+      "type": "api",
+      "request": {
+        "method": "GET",
+        "url": "https://${service}.projectx.com/health",
+        "timeout": 30,
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      "assertions": [
+        {
+          "type": "statusCode",
+          "operator": "is",
+          "target": 200
+        },
+        {
+          "type": "responseTime",
+          "operator": "lessThan",
+          "target": 2000
+        },
+        {
+          "type": "body",
+          "operator": "validatesJSONPath",
+          "target": "$.status",
+          "targetValue": "healthy"
+        }
+      ],
+      "locations": [
+        "aws:us-east-1",
+        "aws:us-west-2"
+      ],
+      "options": {
+        "tick_every": 60,
+        "min_failure_duration": 300,
+        "min_location_failed": 1,
+        "retry": {
+          "count": 2,
+          "interval": 30
+        }
+      }
+    }
+  ]
+}

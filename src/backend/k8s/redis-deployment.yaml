@@ -1,0 +1,204 @@
+# Redis StatefulSet and Service configuration for Project X rental platform
+# Version: 1.0.0
+# Provides high-availability Redis cluster with security and monitoring
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: rental-platform
+  labels:
+    app: rental-platform
+    component: cache
+    environment: production
+spec:
+  ports:
+    - port: 6379
+      name: redis
+      targetPort: redis
+    - port: 16379
+      name: cluster
+      targetPort: cluster
+  clusterIP: None
+  selector:
+    app: rental-platform
+    component: cache
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: rental-platform
+  labels:
+    app: rental-platform
+    component: cache
+    environment: production
+spec:
+  serviceName: redis
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: rental-platform
+      component: cache
+  template:
+    metadata:
+      labels:
+        app: rental-platform
+        component: cache
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9121"
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsNonRoot: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rental-platform
+                  - key: component
+                    operator: In
+                    values:
+                      - cache
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: redis
+          image: redis:7.0-alpine
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: ["-c", "redis-server /etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}"]
+          ports:
+            - containerPort: 6379
+              name: redis
+            - containerPort: 16379
+              name: cluster
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis
+            - name: redis-data
+              mountPath: /data
+            - name: tmp-data
+              mountPath: /tmp
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASSWORD
+        - name: redis-exporter
+          image: oliver006/redis_exporter:v1.45.0
+          ports:
+            - containerPort: 9121
+              name: metrics
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          env:
+            - name: REDIS_ADDR
+              value: "redis://localhost:6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASSWORD
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+        - name: tmp-data
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard-ssd
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-pdb
+  namespace: rental-platform
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: rental-platform
+      component: cache
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-network-policy
+  namespace: rental-platform
+spec:
+  podSelector:
+    matchLabels:
+      app: rental-platform
+      component: cache
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: rental-platform
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 16379
+        - protocol: TCP
+          port: 9121

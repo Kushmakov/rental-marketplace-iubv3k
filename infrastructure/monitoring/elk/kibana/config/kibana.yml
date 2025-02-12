@@ -1,0 +1,78 @@
+# Kibana Configuration v8.9.0
+# Project X Rental Platform - Production Configuration
+
+#----------------------
+# Server Configuration
+#----------------------
+server.name: ${HOSTNAME}
+server.host: "0.0.0.0"
+server.port: 5601
+server.basePath: ""
+server.maxPayloadBytes: 1048576
+server.publicBaseUrl: ${KIBANA_PUBLIC_URL}
+server.compression.enabled: true
+
+# SSL Configuration
+server.ssl.enabled: true
+server.ssl.certificate: ${SSL_CERT_PATH}
+server.ssl.key: ${SSL_KEY_PATH}
+
+#----------------------
+# Elasticsearch Configuration
+#----------------------
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.username: ${ELASTIC_USER}
+elasticsearch.password: ${ELASTIC_PASSWORD}
+elasticsearch.requestTimeout: 30000
+elasticsearch.shardTimeout: 30000
+elasticsearch.ssl.verificationMode: "full"
+elasticsearch.ssl.certificateAuthorities: ["${ES_CA_CERT_PATH}"]
+elasticsearch.sniffOnStart: true
+elasticsearch.sniffInterval: 60000
+
+#----------------------
+# Security Configuration
+#----------------------
+xpack.security.enabled: true
+xpack.security.encryptionKey: ${ENCRYPTION_KEY}
+xpack.security.session.idleTimeout: "30m"
+xpack.security.session.lifespan: "8h"
+xpack.security.audit.enabled: true
+xpack.security.audit.logLevel: "info"
+xpack.security.audit.ignoreFilters:
+  - actions: ["system_info"]
+    categories: ["system"]
+
+#----------------------
+# Monitoring Configuration
+#----------------------
+monitoring.ui.container.elasticsearch.enabled: true
+monitoring.ui.container.logstash.enabled: true
+monitoring.kibana.collection.enabled: true
+monitoring.kibana.collection.interval: 5000
+xpack.monitoring.collection.enabled: true
+xpack.monitoring.min_interval_seconds: 5
+xpack.monitoring.elasticsearch.collection.enabled: true
+
+#----------------------
+# Logging Configuration
+#----------------------
+logging.root.level: "info"
+logging.appenders.default:
+  type: "json"
+  layout.type: "pattern"
+  layout.pattern: "[%date][%level][%logger] %message"
+logging.appenders.rolling-file:
+  type: "rolling-file"
+  fileName: "/var/log/kibana/kibana.log"
+  policy.type: "size-limit"
+  policy.size: "50MB"
+  strategy.type: "numeric"
+  strategy.pattern: "kibana.%i.log.gz"
+  strategy.max: 10
+
+#----------------------
+# Telemetry Configuration
+#----------------------
+telemetry.enabled: false
+telemetry.allowChangingOptInStatus: false

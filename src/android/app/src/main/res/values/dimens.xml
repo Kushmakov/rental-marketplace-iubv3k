@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Spacing System (4px grid) -->
+    <dimen name="spacing_unit_0_5x">4dp</dimen>
+    <dimen name="spacing_unit">8dp</dimen>
+    <dimen name="spacing_unit_2x">16dp</dimen>
+    <dimen name="spacing_unit_3x">24dp</dimen>
+    <dimen name="spacing_unit_4x">32dp</dimen>
+    <dimen name="spacing_unit_6x">48dp</dimen>
+    <dimen name="spacing_unit_8x">64dp</dimen>
+
+    <!-- Navigation Dimensions -->
+    <dimen name="nav_bar_height">56dp</dimen>
+    <dimen name="nav_icon_padding">12dp</dimen>
+    <dimen name="nav_text_padding">4dp</dimen>
+
+    <!-- Property Card Dimensions -->
+    <dimen name="property_card_height">280dp</dimen>
+    <dimen name="property_image_height">160dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_content_padding">16dp</dimen>
+
+    <!-- Typography Scale (using sp for accessibility) -->
+    <dimen name="text_size_headline">24sp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_subtitle">18sp</dimen>
+    <dimen name="text_size_body">16sp</dimen>
+    <dimen name="text_size_caption">14sp</dimen>
+
+    <!-- Icon System -->
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">24dp</dimen>
+    <dimen name="icon_size_large">32dp</dimen>
+    <dimen name="icon_padding">8dp</dimen>
+</resources>

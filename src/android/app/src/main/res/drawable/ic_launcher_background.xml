@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Base background layer using primary brand color -->
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Overlay layer for depth effect using darker primary color -->
+    <group
+        android:translateX="0"
+        android:translateY="0">
+        <path
+            android:fillColor="@color/primary_dark"
+            android:pathData="M0,0L108,0L108,108L0,108L0,0Z" />
+    </group>
+
+</vector>

@@ -1,0 +1,29 @@
+{
+  "watch": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.json"
+  ],
+  "ext": ".ts,.js,.json",
+  "ignore": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    ".git",
+    "packages/*/dist",
+    "coverage",
+    ".docker",
+    "*.log"
+  ],
+  "exec": "ts-node",
+  "verbose": true,
+  "delay": 1000,
+  "env": {
+    "NODE_ENV": "development",
+    "TS_NODE_PROJECT": "./tsconfig.json",
+    "TS_NODE_TRANSPILE_ONLY": "true",
+    "DEBUG": "app:*"
+  },
+  "legacyWatch": false,
+  "restartable": "rs"
+}

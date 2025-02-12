@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Slide-in animation from left edge of screen
+    Used for: Activity transitions, Fragment transitions, Navigation component
+    Duration: 300ms with deceleration for natural motion
+    Hardware accelerated: Yes
+    RTL-aware: Yes
+    Accessibility: Respects system reduced motion settings
+    Version: Platform-dependent (uses standard Android interpolator)
+-->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="-100%p"
+    android:toXDelta="0"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="300"
+    android:interpolator="@android:anim/decelerate_interpolator" />

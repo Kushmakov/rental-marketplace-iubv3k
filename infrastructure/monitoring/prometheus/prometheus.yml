@@ -1,0 +1,137 @@
+# Prometheus Server Configuration v2.45.0
+# Implements enterprise-grade monitoring with comprehensive service coverage and high availability
+
+global:
+  scrape_interval: 15s     # Default interval for scraping targets
+  evaluation_interval: 15s # Default interval for evaluating rules
+  scrape_timeout: 10s     # Timeout for scrape requests
+  external_labels:        # Labels added to any time series or alerts
+    environment: production
+    region: us-west-2
+
+# Import alert and recording rules
+rule_files:
+  - "rules/recording.yml"  # Pre-computed metrics for efficiency
+  - "rules/alerts.yml"     # Alert definitions for all services
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+      scheme: https
+      timeout: 10s
+      api_version: v2
+
+# Scrape configurations for all services
+scrape_configs:
+  # API Gateway metrics
+  - job_name: 'api-gateway'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    static_configs:
+      - targets: ['api-gateway:9090']
+        labels:
+          service: 'api-gateway'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+
+  # Auth Service metrics
+  - job_name: 'auth-service'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    static_configs:
+      - targets: ['auth-service:9090']
+        labels:
+          service: 'auth-service'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+
+  # Node/Infrastructure metrics
+  - job_name: 'node'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'infrastructure'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+
+  # Application metrics
+  - job_name: 'application-service'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['application-service:9090']
+        labels:
+          service: 'application-service'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+
+  # Payment Service metrics
+  - job_name: 'payment-service'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['payment-service:9090']
+        labels:
+          service: 'payment-service'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+
+  # Business metrics
+  - job_name: 'business-metrics'
+    metrics_path: '/metrics'
+    scheme: https
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['business-metrics:9090']
+        labels:
+          service: 'business-metrics'
+          environment: 'production'
+    tls_config:
+      cert_file: '/etc/prometheus/certs/client.crt'
+      key_file: '/etc/prometheus/certs/client.key'
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 15d    # Data retention period
+    retention.size: 512GB  # Maximum storage size
+    wal:
+      retention.time: 12h  # WAL retention period
+
+# Security configuration
+tls_server_config:
+  cert_file: '/etc/prometheus/certs/server.crt'
+  key_file: '/etc/prometheus/certs/server.key'
+  client_auth_type: 'RequireAndVerifyClientCert'
+  client_ca_file: '/etc/prometheus/certs/ca.crt'

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Slide out left animation for activity and fragment transitions
+    Duration: 300ms
+    Interpolator: Accelerate for natural exit motion
+    Usage: Forward navigation, drawer closing, etc.
+    Accessibility: Respects system-level animation settings
+    Performance: Hardware accelerated by default
+    Paired with: slide_in_right.xml for forward navigation
+-->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="0"
+    android:toXDelta="-100%p"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="300"
+    android:interpolator="@android:anim/accelerate_interpolator" />

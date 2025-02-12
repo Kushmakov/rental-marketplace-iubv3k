@@ -1,0 +1,51 @@
+# Version: 1.0
+# Last Updated: 2024
+# Purpose: Control search engine and bot access to platform resources
+
+# Default rules for all crawlers
+User-agent: *
+# Allow public pages
+Allow: /
+Allow: /properties
+Allow: /properties/*
+Allow: /sitemap.xml
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /terms
+Allow: /privacy
+
+# Protect sensitive routes and data
+Disallow: /api/*
+Disallow: /dashboard/*
+Disallow: /applications/*
+Disallow: /payments/*
+Disallow: /profile/*
+Disallow: /messages/*
+Disallow: /*.json$
+Disallow: /auth/*
+Disallow: /admin/*
+Disallow: /internal/*
+Disallow: /user/*
+Disallow: /settings/*
+Disallow: /documents/*
+Disallow: /uploads/*
+
+# Set reasonable crawl rate
+Crawl-delay: 10
+
+# Block AI training bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Sitemap reference
+Sitemap: https://www.projectx.com/sitemap.xml

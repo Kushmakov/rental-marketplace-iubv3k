@@ -1,0 +1,169 @@
+{
+  "monitors": [
+    {
+      "name": "API Gateway Health Status",
+      "type": "service check",
+      "query": "\"api.gateway.health\".over(\"service:api-gateway\").last(3).count_by_status()",
+      "message": "API Gateway health check failed. Check gateway logs and infrastructure.\n\nNotifications: @pagerduty-api-critical @slack-api-alerts\n\nTroubleshooting:\n1. Check API Gateway logs\n2. Verify infrastructure status\n3. Review recent deployments",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:platform"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 2,
+          "warning": 1
+        },
+        "notify_no_data": true,
+        "renotify_interval": 15,
+        "include_tags": true,
+        "evaluation_delay": 60
+      }
+    },
+    {
+      "name": "API Response Time",
+      "type": "metric alert",
+      "query": "avg(last_5m):avg:trace.http.request.duration{service:api-gateway} by {http.route} > 2",
+      "message": "API endpoint response time exceeds 2 seconds threshold.\n\nAffected routes: {{http.route}}\nCurrent value: {{value}} seconds\n\nNotifications: @pagerduty-api-urgent @slack-api-alerts\n\nImpact: User experience degradation\nTroubleshooting:\n1. Check database performance\n2. Review service resource utilization\n3. Analyze recent code deployments",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:platform"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 2.0,
+          "warning": 1.5
+        },
+        "notify_no_data": true,
+        "renotify_interval": 30,
+        "include_tags": true,
+        "evaluation_delay": 60
+      }
+    },
+    {
+      "name": "API Error Rate",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:trace.http.request.errors{service:api-gateway} by {http.route}.as_count() / sum:trace.http.request.hits{service:api-gateway} by {http.route}.as_count() * 100 > 1",
+      "message": "API error rate exceeds 1% threshold over 5 minutes.\n\nAffected routes: {{http.route}}\nCurrent error rate: {{value}}%\n\nNotifications: @pagerduty-api-critical @slack-api-alerts\n\nImpact: Service reliability degradation\nTroubleshooting:\n1. Review error logs in DataDog\n2. Check downstream service health\n3. Verify recent configuration changes",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:platform"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 1.0,
+          "warning": 0.5
+        },
+        "notify_no_data": true,
+        "renotify_interval": 15,
+        "include_tags": true,
+        "evaluation_delay": 60
+      }
+    },
+    {
+      "name": "API Rate Limit Violations",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:api.ratelimit.blocked{service:api-gateway} by {http.route,client.ip}.as_count() > 100",
+      "message": "High rate of API throttling detected.\n\nAffected routes: {{http.route}}\nClient IP: {{client.ip}}\nBlocked requests: {{value}}\n\nNotifications: @pagerduty-api-urgent @slack-security-alerts\n\nPossible causes:\n1. DoS attempt\n2. Misconfigured client\n3. Rate limit too restrictive",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:security"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 100,
+          "warning": 50
+        },
+        "notify_no_data": false,
+        "renotify_interval": 15,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "API Authentication Failures",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:api.auth.failures{service:api-gateway} by {http.route,auth.type}.as_count() > 50",
+      "message": "High rate of authentication failures detected.\n\nAffected routes: {{http.route}}\nAuth type: {{auth.type}}\nFailure count: {{value}}\n\nNotifications: @pagerduty-security @slack-security-alerts\n\nPossible security concerns:\n1. Brute force attempt\n2. Invalid credentials\n3. Token expiration issues",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:security"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 50,
+          "warning": 25
+        },
+        "notify_no_data": true,
+        "renotify_interval": 15,
+        "include_tags": true
+      }
+    },
+    {
+      "name": "API Circuit Breaker Status",
+      "type": "metric alert",
+      "query": "sum(last_5m):sum:api.circuit_breaker.open{service:api-gateway} by {service.name}.as_count() > 0",
+      "message": "Circuit breaker opened for service.\n\nAffected service: {{service.name}}\nStatus: Open\n\nNotifications: @pagerduty-api-urgent @slack-api-alerts\n\nTroubleshooting:\n1. Check dependent service health\n2. Review error logs\n3. Verify network connectivity",
+      "tags": [
+        "service:api-gateway",
+        "env:production",
+        "team:platform"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 0
+        },
+        "notify_no_data": false,
+        "renotify_interval": 30,
+        "include_tags": true
+      }
+    }
+  ],
+  "synthetics": [
+    {
+      "name": "API Health Check",
+      "type": "api",
+      "request": {
+        "method": "GET",
+        "url": "https://api.projectx.com/health",
+        "timeout": 30,
+        "headers": {
+          "X-API-Version": "v1"
+        }
+      },
+      "assertions": [
+        {
+          "type": "statusCode",
+          "operator": "is",
+          "target": 200
+        },
+        {
+          "type": "responseTime",
+          "operator": "lessThan",
+          "target": 2000
+        }
+      ],
+      "locations": [
+        "aws:us-east-1",
+        "aws:us-west-2"
+      ],
+      "options": {
+        "tick_every": 60,
+        "min_failure_duration": 300,
+        "min_location_failed": 1,
+        "retry": {
+          "count": 2,
+          "interval": 300
+        },
+        "monitor_options": {
+          "renotify_interval": 120,
+          "notify_audit": true
+        }
+      }
+    }
+  ]
+}

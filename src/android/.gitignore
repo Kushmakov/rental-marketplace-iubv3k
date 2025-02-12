@@ -1,0 +1,104 @@
+# Gradle build system files
+*.gradle
+.gradle/
+gradle/
+build/
+/*/build/
+gradlew
+gradlew.bat
+gradle.properties
+
+# Local configuration and sensitive files
+local.properties
+keystore.properties
+secret.properties
+*.env
+google-services.json
+firebase-app-distribution.json
+play-account.json
+
+# IDE files
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+
+# Build outputs and compiled files
+/build/
+/*/build/
+/out/
+/captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+/bin/
+/gen/
+
+# Generated files and resources
+/generated/
+/navigation/safeargs/
+/kotlin-gen/
+/kapt-gen/
+.externalNativeBuild/
+.cxx/
+R.java
+/generated/
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Signing configurations and credentials
+*.keystore
+*.jks
+*.p12
+*.pepk
+keystore.properties
+upload-keystore.jks
+
+# Debug, logs and crash reporting
+*.log
+crashlytics-build.properties
+crashlytics.properties
+fabric.properties
+firebase-debug.log
+/captures/
+com_crashlytics_export_strings.xml
+*.hprof
+.testlog/
+jacoco.exec
+
+# Kotlin specific files
+.kotlin/
+*.kotlin_module
+*.kotlin_metadata
+*.kotlin_builtins
+kotlin-profile-*
+
+# Testing and profiling
+/androidTest/
+/test/resources/
+*.hprof
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Navigation component
+.navigation/
+raw/
+
+# Native build files
+.externalNativeBuild/
+.cxx/
+
+# Temporary files
+*.tmp
+*.temp

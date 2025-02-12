@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Debug-specific permissions for development and testing -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"
+        android:description="Required for development tools overlay"/>
+    
+    <uses-permission android:name="android.permission.READ_LOGS"
+        android:description="Access application logs for debugging"/>
+    
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"
+        android:description="Enable location mocking for testing"/>
+    
+    <uses-permission android:name="android.permission.INTERNET"
+        android:description="Network access for debugging tools"/>
+    
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"
+        android:description="Monitor network state for debugging"/>
+
+    <!-- Debug application configuration -->
+    <application
+        android:debuggable="true"
+        android:allowBackup="true"
+        android:networkSecurityConfig="@xml/network_security_config_debug"
+        tools:replace="android:networkSecurityConfig"
+        tools:ignore="HardcodedDebugMode,AllowBackup">
+
+        <!-- Enable strict mode monitoring in debug builds -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
+        <!-- Debug activity for testing -->
+        <activity
+            android:name=".ui.debug.DebugActivity"
+            android:exported="false"
+            android:label="Debug Settings"
+            android:theme="@style/Theme.ProjectX.Debug" />
+
+    </application>
+
+</manifest>
